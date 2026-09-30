@@ -15,8 +15,8 @@ public final class console
    private final Telemetry telemetry;
    private final DcMotorEx intaker, outtakeFront, outtakeBack;
 
-   public console(final Telemetry telemetry, final DcMotorEx intaker,
-                  final DcMotorEx outtakeFront,  final DcMotorEx outtakeBack) {
+   public console(final Telemetry telemetry,    final DcMotorEx intaker,
+                  final DcMotorEx outtakeFront, final DcMotorEx outtakeBack) {
       this.telemetry = telemetry;
       this.outtakeFront = outtakeFront;
       this.outtakeBack = outtakeBack;
@@ -24,12 +24,11 @@ public final class console
    }
 
    public void run(final double sysVoltage, final double loopTime) {
-      telemetry.addData("Outtake Top", outtakeFront.getVelocity());
-      telemetry.addData("Outtake Bottom", outtakeBack.getVelocity());
-      telemetry.addLine("Battery Voltage: " + sysVoltage); // Testing
-      telemetry.addData("Battery Voltage", sysVoltage);
-      telemetry.addData("Loop Time", 1000 / loopTime);
-      telemetry.addData("Intake Current (AMPS)", intaker.getCurrent(CurrentUnit.AMPS));
+      telemetry.addLine("Outtake Front: " + -outtakeFront.getVelocity() + " RPM");
+      telemetry.addLine("Outtake Back: " + -outtakeBack.getVelocity() + " RPM");
+      telemetry.addLine("Battery Voltage: " + sysVoltage);
+      telemetry.addLine("Loop Time: " + 1000 / loopTime + " HZ");
+      telemetry.addLine("Intake Current: " + intaker.getCurrent(CurrentUnit.AMPS) + " AMPS");
 
       telemetry.update();
    }

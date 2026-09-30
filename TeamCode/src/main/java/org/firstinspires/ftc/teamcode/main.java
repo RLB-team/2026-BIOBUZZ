@@ -30,16 +30,16 @@ public final class main extends LinearOpMode
 
       final var pidfA = new PIDFCoefficients(50.0, 15.0, 0.0, 0.0);
 
-      final var battery =    hardwareMap.get(VoltageSensor.class, "Control Hub");
+      final var battery =  hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-      final var frontLeft =  hardwareMap.get(DcMotorEx.class, "Front Left");
-      final var frontRight = hardwareMap.get(DcMotorEx.class, "Front Right");
-      final var backLeft =   hardwareMap.get(DcMotorEx.class, "Back Left");
-      final var backRight =  hardwareMap.get(DcMotorEx.class, "Back Right");
-      final var intaker =    hardwareMap.get(DcMotorEx.class, "Intake");
-      final var indexer =    hardwareMap.get(DcMotorEx.class, "Indexer");
-      final var outtakeFront =   hardwareMap.get(DcMotorEx.class, "Outtake Front");
-      final var outtakeBack =   hardwareMap.get(DcMotorEx.class, "Outtake Back");
+      final var frontLeft =    hardwareMap.get(DcMotorEx.class, "Front Left");
+      final var frontRight =   hardwareMap.get(DcMotorEx.class, "Front Right");
+      final var backLeft =     hardwareMap.get(DcMotorEx.class, "Back Left");
+      final var backRight =    hardwareMap.get(DcMotorEx.class, "Back Right");
+      final var intaker =      hardwareMap.get(DcMotorEx.class, "Intake");
+      final var indexer =      hardwareMap.get(DcMotorEx.class, "Indexer");
+      final var outtakeFront = hardwareMap.get(DcMotorEx.class, "Outtake Front");
+      final var outtakeBack =  hardwareMap.get(DcMotorEx.class, "Outtake Back");
 
       final DcMotorEx[] brakeMotors =   { frontLeft, frontRight, backLeft, backRight };
       final DcMotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer };
