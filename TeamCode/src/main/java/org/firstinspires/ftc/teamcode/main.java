@@ -1,10 +1,13 @@
 /* 2026
-   Authors: Wade Kuhn
-   Game:    BIOBUZZ
-   License: GPL V3.0
-   Main.java provides an efficient, class organized OpMode */
+ * Authors: Wade Kuhn
+ * Game:    BIOBUZZ
+ * License: GPL V3.0
+ * Main.java provides an efficient, class organized OpMode
+ */
 
 package org.firstinspires.ftc.teamcode;
+
+import static org.firstinspires.ftc.teamcode.constants.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,20 +20,23 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "Testing OpMode")
 public final class main extends LinearOpMode
 {
+   static double motorSpeedCap = 1.0;
+   static double exceptionTime = 0.0;
+
+   static double loopTime = 0.0;
+   static double sysVoltage = 15.00;
+   // Voltage is calculated at the end of the loop.
+   // This prevents brownout detection from happening on first loop
+
+   static double x, y, rx;
+   static double aButton, bButton, xButton;
+   static double leftTrigger;
+
    @Override
    public void runOpMode() {
-      double exceptionTime = 0.0;
-      double loopTime = 0.0;
-      double sysVoltage;
-      double motorSpeedCap = 1.0;
+      final var pidf = new PIDFCoefficients(P, I, D, F);
 
-      double x, y, rx;
-      double aButton, bButton, xButton;
-      double leftTrigger;
-
-      final var pidfA = new PIDFCoefficients(50.0, 15.0, 0.0, 0.0);
-
-      final var battery =  hardwareMap.get(VoltageSensor.class, "Control Hub");
+      final var battery = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
       final var frontLeft =    hardwareMap.get(DcMotorEx.class, "Front Left");
       final var frontRight =   hardwareMap.get(DcMotorEx.class, "Front Right");
@@ -42,18 +48,16 @@ public final class main extends LinearOpMode
       final var outtakeBack =  hardwareMap.get(DcMotorEx.class, "Outtake Back");
 
       final DcMotorEx[] brakeMotors =   { frontLeft, frontRight, backLeft, backRight };
-      final DcMotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer };
+      final DcMotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer,
+                                          outtakeFront, outtakeFront };
       final DcMotorEx[] reverseMotors = { frontLeft, backLeft, outtakeFront };
 
       for (final var motor : brakeMotors)
          motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
       for (final var motor : encoderMotors)
-         motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+         motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidf);
       for (final var motor : reverseMotors)
          motor.setDirection(DcMotorEx.Direction.REVERSE);
-
-      outtakeFront.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfA);
-      outtakeBack.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidfA);
 
       final var drive =   new drive(frontLeft, frontRight, backLeft, backRight);
       final var intake =  new intake(intaker, indexer);
@@ -68,22 +72,22 @@ public final class main extends LinearOpMode
       while (opModeIsActive()) {
          loopTimer.reset();
 
-         sysVoltage = battery.getVoltage();
-
-         x =  Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * 1.3;
-         y =  Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap);
-         rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap);
+         x =  Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * driveXBias;
+         y =  Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * driveYBias;
+         rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * driveTurnBias;
 
          aButton = gamepad1.a ? 1.0 : 0.0;
          bButton = gamepad1.b ? 1.0 : 0.0;
          xButton = gamepad1.x ? 1.0 : 0.0;
-         leftTrigger = gamepad1.left_trigger / 2.0;
+         leftTrigger = -gamepad1.left_trigger / shootDivider;
 
          drive.run(x, y, rx);
          intake.run(aButton, bButton, xButton);
          outtake.run(leftTrigger);
          console.run(sysVoltage, loopTime);
-         motorSpeedCap = logger.run(sysVoltage, exceptionTime, loopTime);
+         logger.run(sysVoltage, loopTime);
+
+         sysVoltage = battery.getVoltage();
 
          loopTime = loopTimer.milliseconds();
       }

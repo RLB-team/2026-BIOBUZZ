@@ -1,8 +1,10 @@
-/* 2026
-   Authors: Wade Kuhn
-   Game:    BIOBUZZ
-   License: GPL V3.0
-   Drive.java is a simple, modular mecanum drive class */
+/*
+ * 2026
+ * Authors: Wade Kuhn
+ * Game:    BIOBUZZ
+ * License: GPL V3.0
+ * Drive.java is a simple, modular mecanum drive class
+ */
 
 package org.firstinspires.ftc.teamcode;
 

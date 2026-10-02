@@ -1,8 +1,10 @@
-/* 2026
-   Authors: Wade Kuhn
-   Game:    BIOBUZZ
-   License: GPL V3.0
-   Logger.java manages error + exception handling */
+/*
+ * 2026
+ * Authors: Wade Kuhn
+ * Game:    BIOBUZZ
+ * License: GPL V3.0
+ * Logger.java manages error + exception handling
+ */
 
 package org.firstinspires.ftc.teamcode;
 
@@ -14,14 +16,13 @@ public final class logger
 
    public logger() {}
 
-   public double run(final double sysVoltage, double exceptionTime, final double loopTime) {
+   public void run(final double sysVoltage, final double loopTime) {
       if (sysVoltage < 10.0) {
-         exceptionTime += loopTime / 1000.0;
-         motorSpeedCap = 0.5;
+         main.exceptionTime += loopTime / 1000.0;
+         main.motorSpeedCap = 0.5;
       }
-      if (exceptionTime >= 10.0) {
-         RobotLog.w("Exception time is " + exceptionTime + " seconds.");
+      if (main.exceptionTime >= 10.0) {
+         RobotLog.w("Exception time is " + main.exceptionTime + " seconds.");
       }
-      return motorSpeedCap;
    }
 }

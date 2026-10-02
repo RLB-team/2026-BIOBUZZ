@@ -1,8 +1,9 @@
 /* 2026
-   Authors: Wade Kuhn
-   Game:    BIOBUZZ
-   License: GPL V3.0
-   Outtake.java is a simple outtake management class */
+ * Authors: Wade Kuhn
+ * Game:    BIOBUZZ
+ * License: GPL V3.0
+ * Outtake.java is a simple outtake management class
+ */
 
 package org.firstinspires.ftc.teamcode;
 
@@ -18,7 +19,7 @@ public final class outtake
    }
 
    public void run(final double leftTrigger) {
-      outtakeFront.setPower(-leftTrigger);
-      outtakeBack.setPower(-leftTrigger);
+      outtakeFront.setPower(leftTrigger);
+      outtakeBack.setPower(leftTrigger);
    }
 }

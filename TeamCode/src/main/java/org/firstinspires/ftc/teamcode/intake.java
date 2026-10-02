@@ -1,8 +1,10 @@
-/* 2026
-   Authors: Wade Kuhn
-   Game:    BIOBUZZ
-   License: GPL V3.0
-   Intake.java is a simple intake and indexer management class */
+/*
+ * 2026
+ * Authors: Wade Kuhn
+ * Game:    BIOBUZZ
+ * License: GPL V3.0
+ * Intake.java is a simple intake and indexer management class
+ */
 
 package org.firstinspires.ftc.teamcode;
 

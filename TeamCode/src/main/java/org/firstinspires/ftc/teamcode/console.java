@@ -1,8 +1,10 @@
-/* 2026
-   Authors: Wade Kuhn
-   Game:    BIOBUZZ
-   License: GPL V3.0
-   Console.java manages telemetry and debugging output */
+/*
+ * 2026
+ * Authors: Wade Kuhn
+ * Game:    BIOBUZZ
+ * License: GPL V3.0
+ * Console.java manages telemetry and debugging output
+ */
 
 package org.firstinspires.ftc.teamcode;
 
@@ -25,10 +27,10 @@ public final class console
 
    public void run(final double sysVoltage, final double loopTime) {
       telemetry.addLine("Outtake Front: " + -outtakeFront.getVelocity() + " RPM");
-      telemetry.addLine("Outtake Back: " + -outtakeBack.getVelocity() + " RPM");
+      telemetry.addLine("Outtake Back: " +  -outtakeBack.getVelocity() +  " RPM");
       telemetry.addLine("Battery Voltage: " + sysVoltage);
-      telemetry.addLine("Loop Time: " + 1000 / loopTime + " HZ");
-      telemetry.addLine("Intake Current: " + intaker.getCurrent(CurrentUnit.AMPS) + " AMPS");
+      telemetry.addLine("Loop Time: " + 1000 / loopTime + " Hz");
+      telemetry.addLine("Intake Current: " + intaker.getCurrent(CurrentUnit.AMPS) + " amps");
 
       telemetry.update();
    }
