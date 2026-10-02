@@ -8,9 +8,9 @@ public final class constants {
    public static final double D = 0.0;
    public static final double F = 0.0;
 
-   public static final double driveXBias = 1.3;
-   public static final double driveYBias = 1.0;
-   public static final double driveTurnBias =  1.0;
+   public static final double DRIVE_X_BIAS = 1.3;
+   public static final double DRIVE_Y_BIAS = 1.0;
+   public static final double DRIVE_TURN_BIAS =  1.0;
 
-   public static final double shootDivider = 2.0;
+   public static final double SHOOT_DIVIDER = 2.0;
 }

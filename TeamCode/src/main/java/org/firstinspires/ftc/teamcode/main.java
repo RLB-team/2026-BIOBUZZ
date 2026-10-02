@@ -20,13 +20,11 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "Testing OpMode")
 public final class main extends LinearOpMode
 {
-   static double motorSpeedCap = 1.0;
-   static double exceptionTime = 0.0;
+   static double motorSpeedCap;
+   static double exceptionTime;
 
-   static double loopTime = 0.0;
-   static double sysVoltage = 15.00;
-   // Voltage is calculated at the end of the loop.
-   // This prevents brownout detection from happening on first loop
+   static double loopTime;
+   static double sysVoltage;
 
    static double x, y, rx;
    static double aButton, bButton, xButton;
@@ -34,6 +32,16 @@ public final class main extends LinearOpMode
 
    @Override
    public void runOpMode() {
+      // If you initialize a static variable, the initialization is sometimes ignored,
+      // and the variable it was set to last match is sometimes accidentally saved.
+      // To fix this we declare the statics and then modify them here.
+      motorSpeedCap = 1.0;
+      exceptionTime = 0.0;
+      loopTime = 0.0;
+      sysVoltage = 15.0;
+      // Voltage is calculated at the end of the loop.
+      // This prevents brownout detection from happening on first loop
+
       final var pidf = new PIDFCoefficients(P, I, D, F);
 
       final var battery = hardwareMap.get(VoltageSensor.class, "Control Hub");
@@ -49,7 +57,7 @@ public final class main extends LinearOpMode
 
       final DcMotorEx[] brakeMotors =   { frontLeft, frontRight, backLeft, backRight };
       final DcMotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer,
-                                          outtakeFront, outtakeFront };
+                                          outtakeFront, outtakeBack };
       final DcMotorEx[] reverseMotors = { frontLeft, backLeft, outtakeFront };
 
       for (final var motor : brakeMotors)
@@ -72,14 +80,14 @@ public final class main extends LinearOpMode
       while (opModeIsActive()) {
          loopTimer.reset();
 
-         x =  Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * driveXBias;
-         y =  Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * driveYBias;
-         rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * driveTurnBias;
+         x =  Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
+         y =  Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
+         rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_TURN_BIAS;
 
          aButton = gamepad1.a ? 1.0 : 0.0;
          bButton = gamepad1.b ? 1.0 : 0.0;
          xButton = gamepad1.x ? 1.0 : 0.0;
-         leftTrigger = -gamepad1.left_trigger / shootDivider;
+         leftTrigger = -gamepad1.left_trigger / SHOOT_DIVIDER;
 
          drive.run(x, y, rx);
          intake.run(aButton, bButton, xButton);
