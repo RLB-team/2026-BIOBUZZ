@@ -125,11 +125,11 @@ import org.firstinspires.ftc.robotcore.internal.ui.UILocation;
 import org.firstinspires.ftc.robotcore.internal.webserver.RobotControllerWebInfo;
 import org.firstinspires.ftc.robotserver.internal.programmingmode.ProgrammingModeManager;
 import org.firstinspires.inspection.RcInspectionActivity;
-import org.threeten.bp.YearMonth;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -297,7 +297,7 @@ public class FtcRobotControllerActivity extends Activity
 
     PreferenceRemoterRC.getInstance().start(prefRemoterStartResult);
 
-    receivedUsbAttachmentNotifications = new ConcurrentLinkedQueue<UsbDevice>();
+    receivedUsbAttachmentNotifications = new ConcurrentLinkedQueue<>();
     eventLoop = null;
 
     setContentView(R.layout.activity_ftc_controller);
@@ -318,8 +318,8 @@ public class FtcRobotControllerActivity extends Activity
       preferencesHelper.writeBooleanPrefIfDifferent(getString(R.string.pref_warn_about_incorrect_clocks), true);
     }
 
-    entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
-    buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
+    entireScreenLayout = findViewById(R.id.entire_screen);
+    buttonMenu = findViewById(R.id.menu_buttons);
     buttonMenu.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -345,9 +345,9 @@ public class FtcRobotControllerActivity extends Activity
     onBotJavaHelper = new OnBotJavaHelperImpl();
 
     /*
-     * Paranoia as the ClassManagerFactory requires EXTERNAL_STORAGE permissions
+     * Paranoia as the ClassManagerFactory requires EXTERNAL_STORAGE permissions,
      * and we've seen on the DS where the finish() call above does not short-circuit
-     * the onCreate() call for the activity and then we crash here because we don't
+     * the onCreate() call for the activity, and then we crash here because we don't
      * have permissions. So...
      */
     if (permissionsValidated) {
@@ -365,13 +365,13 @@ public class FtcRobotControllerActivity extends Activity
       cfgFileMgr.setActiveConfig(false, configFile);
     }
 
-    textDeviceName = (TextView) findViewById(R.id.textDeviceName);
-    textNetworkConnectionStatus = (TextView) findViewById(R.id.textNetworkConnectionStatus);
-    textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
-    textOpMode = (TextView) findViewById(R.id.textOpMode);
-    textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
-    textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
-    textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
+    textDeviceName = findViewById(R.id.textDeviceName);
+    textNetworkConnectionStatus = findViewById(R.id.textNetworkConnectionStatus);
+    textRobotStatus = findViewById(R.id.textRobotStatus);
+    textOpMode = findViewById(R.id.textOpMode);
+    textErrorMessage = findViewById(R.id.textErrorMessage);
+    textGamepad[0] = findViewById(R.id.textGamepad1);
+    textGamepad[1] = findViewById(R.id.textGamepad2);
     immersion = new ImmersiveMode(getWindow().getDecorView());
     dimmer = new Dimmer(this);
     dimmer.longBright();
@@ -501,7 +501,7 @@ public class FtcRobotControllerActivity extends Activity
   protected void readNetworkType() {
     // Control hubs are always running the access point model.  Everything else, for the time
     // being always runs the Wi-Fi Direct model.
-    if (Device.isRevControlHub() == true) {
+    if (Device.isRevControlHub()) {
       networkType = NetworkType.RCWIRELESSAP;
     } else {
       networkType = NetworkType.fromString(preferencesHelper.readString(context.getString(R.string.pref_pairing_kind), NetworkType.globalDefaultAsString()));
@@ -541,11 +541,7 @@ public class FtcRobotControllerActivity extends Activity
 
     RobotState robotState = robot.eventLoopManager.state;
 
-    if (robotState != RobotState.RUNNING) {
-      return false;
-    } else {
-      return true;
-    }
+    return robotState == RobotState.RUNNING;
   }
 
   @Override
@@ -555,7 +551,7 @@ public class FtcRobotControllerActivity extends Activity
     if (id == R.id.action_program_and_manage) {
       if (isRobotRunning()) {
         Intent programmingModeIntent = new Intent(AppUtil.getDefContext(), ProgramAndManageActivity.class);
-        RobotControllerWebInfo webInfo = programmingModeManager.getWebServer().getConnectionInformation();
+        RobotControllerWebInfo webInfo = Objects.requireNonNull(programmingModeManager.getWebServer()).getConnectionInformation();
         programmingModeIntent.putExtra(LaunchActivityConstantsList.RC_WEB_INFO, webInfo.toJson());
         startActivity(programmingModeIntent);
       } else {
@@ -572,7 +568,7 @@ public class FtcRobotControllerActivity extends Activity
       return true;
     }
     else if (id == R.id.action_configure_robot) {
-      EditParameters parameters = new EditParameters();
+      var parameters = new EditParameters();
       Intent intentConfigure = new Intent(AppUtil.getDefContext(), FtcLoadFileActivity.class);
       parameters.putIntent(intentConfigure);
       startActivityForResult(intentConfigure, RequestCode.CONFIGURE_ROBOT_CONTROLLER.ordinal());
@@ -629,7 +625,7 @@ public class FtcRobotControllerActivity extends Activity
    * based on the given configuration. Makes the children split the space.
    */
   private void updateMonitorLayout(Configuration configuration) {
-    LinearLayout monitorContainer = (LinearLayout) findViewById(R.id.monitorContainer);
+    LinearLayout monitorContainer = findViewById(R.id.monitorContainer);
     if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
       // When the phone is landscape, lay out the monitor views horizontally.
       monitorContainer.setOrientation(LinearLayout.HORIZONTAL);
@@ -701,12 +697,8 @@ public class FtcRobotControllerActivity extends Activity
       callback.updateRobotStatus(controllerService.getRobotStatus());
       // Only show this first-time toast on headless systems: what we have now on non-headless suffices
       requestRobotSetup(LynxConstants.isRevControlHub()
-        ? new Runnable() {
-            @Override public void run() {
-              showRestartRobotCompleteToast(R.string.toastRobotSetupComplete);
-            }
-          }
-        : null);
+        ? () -> showRestartRobotCompleteToast(R.string.toastRobotSetupComplete)
+              : null);
     }
   }
 
@@ -755,11 +747,7 @@ public class FtcRobotControllerActivity extends Activity
     RobotLog.clearGlobalErrorMsg();
     RobotLog.clearGlobalWarningMsg();
     shutdownRobot();
-    requestRobotSetup(new Runnable() {
-      @Override public void run() {
-        showRestartRobotCompleteToast(R.string.toastRestartRobotComplete);
-        }
-      });
+    requestRobotSetup(() -> showRestartRobotCompleteToast(R.string.toastRestartRobotComplete));
   }
 
   private void showRestartRobotCompleteToast(@StringRes int resid) {
@@ -787,12 +775,9 @@ public class FtcRobotControllerActivity extends Activity
   protected void hittingMenuButtonBrightensScreen() {
     ActionBar actionBar = getActionBar();
     if (actionBar != null) {
-      actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
-        @Override
-        public void onMenuVisibilityChanged(boolean isVisible) {
-          if (isVisible) {
-            dimmer.handleDimTimer();
-          }
+      actionBar.addOnMenuVisibilityListener(isVisible -> {
+        if (isVisible) {
+          dimmer.handleDimTimer();
         }
       });
     }
@@ -803,11 +788,7 @@ public class FtcRobotControllerActivity extends Activity
       if (key.equals(context.getString(R.string.pref_app_theme))) {
         ThemedActivity.restartForAppThemeChange(getTag(), getString(R.string.appThemeChangeRestartNotifyRC));
       } else if (key.equals(context.getString(R.string.pref_wifi_automute))) {
-        if (preferencesHelper.readBoolean(context.getString(R.string.pref_wifi_automute), false)) {
-          initWifiMute(true);
-        } else {
-          initWifiMute(false);
-        }
+         initWifiMute(preferencesHelper.readBoolean(context.getString(R.string.pref_wifi_automute), false));
       }
     }
   }
@@ -820,13 +801,7 @@ public class FtcRobotControllerActivity extends Activity
 
       motionDetection = new MotionDetection(2.0, 10);
       motionDetection.startListening();
-      motionDetection.registerListener(new MotionDetection.MotionDetectionListener() {
-        @Override
-        public void onMotionDetected(double vector)
-        {
-          wifiMuteStateMachine.consumeEvent(WifiMuteEvent.USER_ACTIVITY);
-        }
-      });
+      motionDetection.registerListener(vector -> wifiMuteStateMachine.consumeEvent(WifiMuteEvent.USER_ACTIVITY));
     } else {
       wifiMuteStateMachine.stop();
       wifiMuteStateMachine = null;

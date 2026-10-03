@@ -12,8 +12,6 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 public final class logger
 {
-   double motorSpeedCap = 1.0;
-
    public logger() {}
 
    public void run(final double sysVoltage, final double loopTime) {
