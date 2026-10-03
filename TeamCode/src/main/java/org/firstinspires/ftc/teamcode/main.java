@@ -23,24 +23,21 @@ public final class main extends LinearOpMode
    static double motorSpeedCap;
    static double exceptionTime;
 
-   static double loopTime;
-   static double sysVoltage;
+   double loopTime = 0.0;
+   double sysVoltage = 15.0;
+   // This prevents brownout detection from happening on first loop
 
-   static double x, y, rx;
-   static double aButton, bButton, xButton;
-   static double leftTrigger;
+   double x, y, rx;
+   double aButton, bButton, xButton;
+   double leftTrigger;
 
    @Override
    public void runOpMode() {
-      // If you initialize a static variable, the initialization is sometimes ignored,
-      // and the variable it was set to last match is sometimes accidentally saved.
-      // To fix this we declare the statics and then modify them here.
+      // If you initialize a static variable, the initialization is sometimes ignored.
+      // To fix this we declare the statics and modify them here. This won't be a problem once
+      // we switch to command-based architecture.
       motorSpeedCap = 1.0;
       exceptionTime = 0.0;
-      loopTime = 0.0;
-      sysVoltage = 15.0;
-      // Voltage is calculated at the end of the loop.
-      // This prevents brownout detection from happening on first loop
 
       final var pidf = new PIDFCoefficients(P, I, D, F);
 
