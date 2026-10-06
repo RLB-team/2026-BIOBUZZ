@@ -17,25 +17,28 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 @TeleOp(name = "Testing OpMode")
 public final class main extends LinearOpMode
 {
    static double motorSpeedCap;
    static double exceptionTime;
 
-   double loopTime = 0.0;
-   double sysVoltage = 15.0;
-   // This prevents brownout detection from happening on first loop
+   volatile double loopTime = 0.0;
+   volatile double sysVoltage = 15.0; // Prevent brownout response on first loop
 
    double x, y, rx;
    double aButton, bButton, xButton;
    double leftTrigger;
 
+   volatile double intakeCurrent;
+
    @Override
    public void runOpMode() {
       // If you initialize a static variable, the initialization is sometimes ignored.
-      // To fix this we declare the statics and modify them here. This won't be a problem once
-      // we switch to command-based architecture.
+      // To fix this we declare the statics and modify them here. Once we switch to
+      // command-based architecture, static variables will not be needed.
       motorSpeedCap = 1.0;
       exceptionTime = 0.0;
 
@@ -67,15 +70,30 @@ public final class main extends LinearOpMode
       final var drive =   new drive(frontLeft, frontRight, backLeft, backRight);
       final var intake =  new intake(intaker, indexer);
       final var outtake = new outtake(outtakeFront, outtakeBack);
-      final var console = new console(telemetry, intaker, outtakeFront, outtakeBack);
+      final var console = new console(telemetry, outtakeFront, outtakeBack);
       final var logger =  new logger();
 
-      final var loopTimer = new ElapsedTime();
+      final var timer = new ElapsedTime();
+
+      Thread consoleThread = new Thread(() -> {
+         while (opModeIsActive()) {
+            console.run(sysVoltage, loopTime, intakeCurrent);
+
+            try { Thread.sleep(50); }
+            catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+               break;
+            }
+         }
+      }
+      );
 
       waitForStart();
 
+      consoleThread.start();
+
       while (opModeIsActive()) {
-         loopTimer.reset();
+         timer.reset();
 
          x =  Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
          y =  Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
@@ -89,12 +107,12 @@ public final class main extends LinearOpMode
          drive.run(x, y, rx);
          intake.run(aButton, bButton, xButton);
          outtake.run(leftTrigger);
-         console.run(sysVoltage, loopTime);
+
+         intakeCurrent = intaker.getCurrent(CurrentUnit.AMPS);
+         sysVoltage = battery.getVoltage();
          logger.run(sysVoltage, loopTime);
 
-         sysVoltage = battery.getVoltage();
-
-         loopTime = loopTimer.milliseconds();
+         loopTime = timer.milliseconds();
       }
    }
 }

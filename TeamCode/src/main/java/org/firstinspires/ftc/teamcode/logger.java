@@ -16,8 +16,9 @@ public final class logger
 
    public void run(final double sysVoltage, final double loopTime) {
       if (sysVoltage < 10.0) {
-         main.exceptionTime += loopTime / 1000.0;
+         main.exceptionTime += loopTime / 1000.0; // Increment by realtime
          main.motorSpeedCap = 0.5;
+         // FIXME: Modifying global variables is a bad practice.
       }
       if (main.exceptionTime >= 10.0) {
          RobotLog.w("Exception time is " + main.exceptionTime + " seconds.");
