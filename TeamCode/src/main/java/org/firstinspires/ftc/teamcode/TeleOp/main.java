@@ -5,9 +5,9 @@
  * Main.java provides an efficient, class organized OpMode
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.constants.*;
+import static org.firstinspires.ftc.teamcode.TeleOp.constants.*;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -19,6 +19,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
+import java.util.List;
 
 @TeleOp(name = "Testing OpMode")
 public final class main extends LinearOpMode
@@ -39,13 +41,12 @@ public final class main extends LinearOpMode
 
    @Override
    public void runOpMode() {
-      // If you initialize a static variable, the initialization is sometimes ignored.
-      // To fix this we declare the statics and modify them here. Once we switch to
-      // command-based architecture, static variables will not be needed.
+      // Java sometimes ignores the initialization of static, non-constant variables.
+      // To fix this we declare the statics and modify them here.
       motorSpeedCap = 1.0;
       exceptionTime = 0.0;
 
-      final var pidf = new PIDFCoefficients(P, I, D, F);
+      final var pidf = new PIDFCoefficients(P_A, I_A, D_A, F_A);
 
       final var battery = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
@@ -70,9 +71,9 @@ public final class main extends LinearOpMode
       for (final var motor : reverseMotors)
          motor.setDirection(DcMotorEx.Direction.REVERSE);
 
-      final var modules = hardwareMap.getAll(LynxModule.class);
+      final List<LynxModule> modules = hardwareMap.getAll(LynxModule.class);
       for (final var module : modules) {
-         module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+         module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
       }
 
       final var drive =   new drive(frontLeft, frontRight, backLeft, backRight);
@@ -102,6 +103,9 @@ public final class main extends LinearOpMode
       consoleThread.start();
 
       while (opModeIsActive()) {
+         for (final var module : modules) {
+            module.clearBulkCache();
+         }
          timer.reset();
 
          x =  Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
@@ -111,7 +115,7 @@ public final class main extends LinearOpMode
          aButton = gamepad1.a ? 1.0 : 0.0;
          bButton = gamepad1.b ? 1.0 : 0.0;
          xButton = gamepad1.x ? 1.0 : 0.0;
-         leftTrigger = -gamepad1.left_trigger / SHOOT_DIVIDER;
+         leftTrigger = -gamepad1.left_trigger / SHOOT_SPEED_DIVIDER;
 
          drive.run(x, y, rx);
          intake.run(aButton, bButton, xButton);

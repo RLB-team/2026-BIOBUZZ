@@ -6,7 +6,7 @@
  * Console.java manages telemetry and debugging output
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -20,8 +20,8 @@ public final class console
 
    public void run(final double outtakeFrontVelocity, final double outtakeBackVelocity,
                    final double sysVoltage, final double loopTime, final double intakeCurrent) {
-      // Never read sensors in this function.
-      // Always declare them as variables in main.java and pass them into this function.
+      // Never read sensors in this function.                                           /|\
+      // Instead, declare them as variables in main.java and pass them to this function. |
       telemetry.addLine("Outtake Front: " + outtakeFrontVelocity + " RPM");
       telemetry.addLine("Outtake Back: " +  outtakeBackVelocity +  " RPM");
       telemetry.addLine("Battery Voltage: " + sysVoltage);

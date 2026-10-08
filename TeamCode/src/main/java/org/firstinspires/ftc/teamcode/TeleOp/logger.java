@@ -6,7 +6,7 @@
  * Logger.java manages error + exception handling
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
