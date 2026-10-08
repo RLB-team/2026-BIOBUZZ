@@ -1,5 +1,5 @@
 /*
- * 2026
+ * Year:    2026
  * Authors: Wade Kuhn
  * Game:    BIOBUZZ
  * License: GPL V3.0

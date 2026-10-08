@@ -1,5 +1,5 @@
 /*
- * 2026
+ * Year:    2026
  * Authors: Wade Kuhn
  * Game:    BIOBUZZ
  * License: GPL V3.0
@@ -25,7 +25,7 @@ public final class console
       telemetry.addLine("Outtake Front: " + outtakeFrontVelocity + " RPM");
       telemetry.addLine("Outtake Back: " +  outtakeBackVelocity +  " RPM");
       telemetry.addLine("Battery Voltage: " + sysVoltage);
-      telemetry.addLine("Loop Time: " + 1000 / loopTime + " Hz");
+      telemetry.addLine("Loop Time: " + 1000.0 / loopTime + " Hz");
       telemetry.addLine("Intake Current: " + intakeCurrent + " amps");
       telemetry.update();
    }
