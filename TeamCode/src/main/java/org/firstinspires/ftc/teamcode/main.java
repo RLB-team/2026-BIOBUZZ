@@ -9,6 +9,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.constants.*;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -32,6 +33,8 @@ public final class main extends LinearOpMode
    double aButton, bButton, xButton;
    double leftTrigger;
 
+   volatile double outtakeFrontVelocity;
+   volatile double outtakeBackVelocity;
    volatile double intakeCurrent;
 
    @Override
@@ -67,17 +70,23 @@ public final class main extends LinearOpMode
       for (final var motor : reverseMotors)
          motor.setDirection(DcMotorEx.Direction.REVERSE);
 
+      final var modules = hardwareMap.getAll(LynxModule.class);
+      for (final var module : modules) {
+         module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+      }
+
       final var drive =   new drive(frontLeft, frontRight, backLeft, backRight);
       final var intake =  new intake(intaker, indexer);
       final var outtake = new outtake(outtakeFront, outtakeBack);
-      final var console = new console(telemetry, outtakeFront, outtakeBack);
+      final var console = new console(telemetry);
       final var logger =  new logger();
 
       final var timer = new ElapsedTime();
 
       Thread consoleThread = new Thread(() -> {
          while (opModeIsActive()) {
-            console.run(sysVoltage, loopTime, intakeCurrent);
+            // Every variable passed to this thread should be volatile.
+            console.run(outtakeFrontVelocity, outtakeBackVelocity, sysVoltage, loopTime, intakeCurrent);
 
             try { Thread.sleep(50); }
             catch (InterruptedException e) {
@@ -108,6 +117,8 @@ public final class main extends LinearOpMode
          intake.run(aButton, bButton, xButton);
          outtake.run(leftTrigger);
 
+         outtakeFrontVelocity = -outtakeFront.getVelocity();
+         outtakeBackVelocity = -outtakeBack.getVelocity();
          intakeCurrent = intaker.getCurrent(CurrentUnit.AMPS);
          sysVoltage = battery.getVoltage();
          logger.run(sysVoltage, loopTime);

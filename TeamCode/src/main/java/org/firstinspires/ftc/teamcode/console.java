@@ -9,28 +9,24 @@
 package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public final class console
 {
    private final Telemetry telemetry;
-   private final DcMotorEx outtakeFront, outtakeBack;
 
-   public console(final Telemetry telemetry, final DcMotorEx outtakeFront,
-                  final DcMotorEx outtakeBack) {
+   public console(final Telemetry telemetry) {
       this.telemetry = telemetry;
-      this.outtakeFront = outtakeFront;
-      this.outtakeBack = outtakeBack;
    }
 
-   public void run(final double sysVoltage, final double loopTime,
-                   final double intakeCurrent) {
-      telemetry.addLine("Outtake Front: " + -outtakeFront.getVelocity() + " RPM");
-      telemetry.addLine("Outtake Back: " +  -outtakeBack.getVelocity() +  " RPM");
+   public void run(final double outtakeFrontVelocity, final double outtakeBackVelocity,
+                   final double sysVoltage, final double loopTime, final double intakeCurrent) {
+      // Never read sensors in this function.
+      // Always declare them as variables in main.java and pass them into this function.
+      telemetry.addLine("Outtake Front: " + outtakeFrontVelocity + " RPM");
+      telemetry.addLine("Outtake Back: " +  outtakeBackVelocity +  " RPM");
       telemetry.addLine("Battery Voltage: " + sysVoltage);
       telemetry.addLine("Loop Time: " + 1000 / loopTime + " Hz");
       telemetry.addLine("Intake Current: " + intakeCurrent + " amps");
-
       telemetry.update();
    }
 }
