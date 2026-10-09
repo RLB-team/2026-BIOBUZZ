@@ -1,10 +1,7 @@
-/*
- * Year:    2026
- * Authors: Wade Kuhn
- * Game:    BIOBUZZ
- * License: GPL V3.0
- * Logger.java manages error + exception handling
- */
+// This class is depreciated. It has been replaced by `Logger.kt`,
+// the Kotlin rewrite of this file.
+// This dead class will continue to exist as a backup until `Logger.kt`
+// is proven to be reliable.
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 

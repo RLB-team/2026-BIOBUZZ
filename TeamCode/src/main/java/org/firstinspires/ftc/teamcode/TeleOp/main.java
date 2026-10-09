@@ -81,7 +81,7 @@ public final class main extends LinearOpMode
       final var intake =  new intake(intaker, indexer);
       final var outtake = new outtake(outtakeFront, outtakeBack);
       final var console = new ConsoleKt(telemetry);
-      final var logger =  new logger();
+      final var logger =  new Logger();
 
       final var timer = new ElapsedTime();
 

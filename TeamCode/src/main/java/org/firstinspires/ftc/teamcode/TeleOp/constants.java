@@ -8,10 +8,8 @@
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-public interface constants
+public interface constants // everything is `public static final`
 {
-   // Interface keyword makes all variables in a class `public static final`
-
    // --- PIDF ---
    double P_A = 50.0;
    double I_A = 15.0;
