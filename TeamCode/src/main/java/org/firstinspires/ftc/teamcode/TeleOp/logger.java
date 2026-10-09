@@ -23,7 +23,7 @@ public final class logger
          // FIXME: Modifying global variables is a bad practice.
       }
       if (main.exceptionTime - warnings >= 10.0) {
-         RobotLog.w(" --- Automated dump due to high exception time ---");
+         RobotLog.w("--- Automated dump due to high exception time ---");
          RobotLog.w("Exception time is " + main.exceptionTime + " seconds.");
          RobotLog.w("Drivetrain max power: " + main.motorSpeedCap * 100.0 + "%");
          RobotLog.w("Loop time: " + 1000.0 / loopTime + " Hz");

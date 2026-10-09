@@ -1,10 +1,7 @@
-/*
- * Year:    2026
- * Authors: Wade Kuhn
- * Game:    BIOBUZZ
- * License: GPL V3.0
- * Console.java manages telemetry and debugging output
- */
+// This class is depreciated. It has been replaced by `ConsoleKt.kt`,
+// the Kotlin rewrite of this file.
+// This dead class will continue to exist as a backup until `ConsoleKt.kt`
+// is proven to be reliable.
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 
@@ -22,11 +19,17 @@ public final class console
                    final double sysVoltage, final double loopTime, final double intakeCurrent) {
       // Never read sensors in this function.                                           /|\
       // Instead, declare them as variables in main.java and pass them to this function. |
+      telemetry.addLine("--- Outtake ---");
       telemetry.addLine("Outtake Front: " + outtakeFrontVelocity + " RPM");
       telemetry.addLine("Outtake Back: " +  outtakeBackVelocity +  " RPM");
+
+      telemetry.addLine("--- Intake / Indexer ---");
+      telemetry.addLine("Intake Current: " + intakeCurrent + " amps");
+
+      telemetry.addLine("--- Other Debug ---");
       telemetry.addLine("Battery Voltage: " + sysVoltage);
       telemetry.addLine("Loop Time: " + 1000.0 / loopTime + " Hz");
-      telemetry.addLine("Intake Current: " + intakeCurrent + " amps");
+
       telemetry.update();
    }
 }

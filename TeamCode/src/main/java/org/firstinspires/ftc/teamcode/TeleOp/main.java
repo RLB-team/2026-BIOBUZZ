@@ -29,16 +29,16 @@ public final class main extends LinearOpMode
    static double motorSpeedCap;
    static double exceptionTime;
 
-   volatile double loopTime = 0.0;
-   volatile double sysVoltage = 15.0; // Prevent brownout response on first loop
+   double loopTime = 0.0;
+   double sysVoltage = 15.0; // Prevent brownout response on first loop
 
    double x, y, rx;
    double aButton, bButton, xButton;
    double leftTrigger;
 
-   volatile double outtakeFrontVelocity;
-   volatile double outtakeBackVelocity;
-   volatile double intakeCurrent;
+   double outtakeFrontVelocity;
+   double outtakeBackVelocity;
+   double intakeCurrent;
 
    @Override
    public void runOpMode() {
@@ -80,28 +80,12 @@ public final class main extends LinearOpMode
       final var drive =   new drive(frontLeft, frontRight, backLeft, backRight);
       final var intake =  new intake(intaker, indexer);
       final var outtake = new outtake(outtakeFront, outtakeBack);
-      final var console = new console(telemetry);
+      final var console = new ConsoleKt(telemetry);
       final var logger =  new logger();
 
       final var timer = new ElapsedTime();
 
-      Thread consoleThread = new Thread(() -> {
-         while (opModeIsActive()) {
-            // Every variable passed to this thread should be volatile.
-            console.run(outtakeFrontVelocity, outtakeBackVelocity, sysVoltage, loopTime, intakeCurrent);
-
-            try { Thread.sleep(50); }
-            catch (InterruptedException e) {
-               Thread.currentThread().interrupt();
-               break;
-            }
-         }
-      }
-      );
-
       waitForStart();
-
-      consoleThread.start();
 
       while (opModeIsActive()) {
          for (final var module : modules) {
@@ -127,6 +111,7 @@ public final class main extends LinearOpMode
          intakeCurrent = intaker.getCurrent(CurrentUnit.AMPS);
          sysVoltage = battery.getVoltage();
          logger.run(sysVoltage, loopTime);
+         console.run(outtakeFrontVelocity, outtakeBackVelocity, sysVoltage, loopTime, intakeCurrent);
 
          loopTime = timer.milliseconds();
       }
