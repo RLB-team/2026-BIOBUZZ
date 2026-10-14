@@ -1,14 +1,14 @@
 /*
+ * Constants.java
  * Year:    2026
  * Authors: Wade Kuhn
  * Game:    BIOBUZZ
  * License: GPL V3.0
- * Global constants file
  */
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-public interface constants // everything is `public static final`
+public interface Constants
 {
    // --- PIDF ---
    double P_A = 50.0;
@@ -22,5 +22,9 @@ public interface constants // everything is `public static final`
    double DRIVE_TURN_BIAS = 1.0;
 
    // --- Outtake ---
-   double SHOOT_SPEED_DIVIDER = 2.0;
+   int SHOOT_SPEED_DIVIDER = 2;
+
+
+   // --- Runtime Controls ---
+   boolean OUTPUT_TELEMETRY = true;
 }

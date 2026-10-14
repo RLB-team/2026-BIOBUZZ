@@ -1,14 +1,14 @@
 /*
+ * Main.java
  * Year:    2026
  * Authors: Wade Kuhn
  * Game:    BIOBUZZ
  * License: GPL V3.0
- * Main.java provides an efficient, class organized OpMode
  */
 
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.MainOpMode;
 
-import static org.firstinspires.ftc.teamcode.TeleOp.constants.*;
+import static org.firstinspires.ftc.teamcode.TeleOp.Constants.*;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,33 +20,32 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.TeleOp.Debug;
+import org.firstinspires.ftc.teamcode.TeleOp.Drive;
+import org.firstinspires.ftc.teamcode.TeleOp.Outtake;
+import org.firstinspires.ftc.teamcode.TeleOp.Transfer;
 
 import java.util.List;
 
-@TeleOp(name = "Testing OpMode")
-public final class main extends LinearOpMode
+@TeleOp(name = "Main OpMode")
+public final class Main extends LinearOpMode
 {
-   static double motorSpeedCap;
-   static double exceptionTime;
-
    double loopTime = 0.0;
    double sysVoltage = 15.0; // Prevent brownout response on first loop
 
    double x, y, rx;
-   double aButton, bButton, xButton;
+   double bButton, xButton;
    double leftTrigger;
 
    double outtakeFrontVelocity;
    double outtakeBackVelocity;
    double intakeCurrent;
 
-   @Override
-   public void runOpMode() {
-      // Java sometimes ignores the initialization of static, non-constant variables.
-      // To fix this we declare the statics and modify them here.
-      motorSpeedCap = 1.0;
-      exceptionTime = 0.0;
+   double motorSpeedCap;
 
+   @Override
+   public void runOpMode()
+   {
       final var pidf = new PIDFCoefficients(P_A, I_A, D_A, F_A);
 
       final var battery = hardwareMap.get(VoltageSensor.class, "Control Hub");
@@ -77,11 +76,10 @@ public final class main extends LinearOpMode
          module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
       }
 
-      final var drive =   new drive(frontLeft, frontRight, backLeft, backRight);
-      final var intake =  new intake(intaker, indexer);
-      final var outtake = new outtake(outtakeFront, outtakeBack);
-      final var console = new ConsoleKt(telemetry);
-      final var logger =  new Logger();
+      final var Drive =    new Drive(frontLeft, frontRight, backLeft, backRight);
+      final var Transfer = new Transfer(intaker, indexer);
+      final var Outtake =  new Outtake(outtakeFront, outtakeBack);
+      final var Debug =    new Debug(telemetry);
 
       final var timer = new ElapsedTime();
 
@@ -91,29 +89,31 @@ public final class main extends LinearOpMode
          for (final var module : modules) {
             module.clearBulkCache();
          }
-         timer.reset();
 
          x =  Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
          y =  Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
          rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_TURN_BIAS;
 
-         aButton = gamepad1.a ? 1.0 : 0.0;
          bButton = gamepad1.b ? 1.0 : 0.0;
          xButton = gamepad1.x ? 1.0 : 0.0;
          leftTrigger = -gamepad1.left_trigger / SHOOT_SPEED_DIVIDER;
 
-         drive.run(x, y, rx);
-         intake.run(aButton, bButton, xButton);
-         outtake.run(leftTrigger);
-
          outtakeFrontVelocity = -outtakeFront.getVelocity();
-         outtakeBackVelocity = -outtakeBack.getVelocity();
+         outtakeBackVelocity =  -outtakeBack.getVelocity();
          intakeCurrent = intaker.getCurrent(CurrentUnit.AMPS);
          sysVoltage = battery.getVoltage();
-         logger.run(sysVoltage, loopTime);
-         console.run(outtakeFrontVelocity, outtakeBackVelocity, sysVoltage, loopTime, intakeCurrent);
+
+         Drive.run(x, y, rx);
+
+         if (gamepad1.a) Transfer.intake();
+         Transfer.index(bButton - xButton);
+         Outtake.run(leftTrigger);
+
+         motorSpeedCap = Debug.run(outtakeFrontVelocity, outtakeBackVelocity, sysVoltage,
+                                   loopTime, intakeCurrent);
 
          loopTime = timer.milliseconds();
+         timer.reset();
       }
    }
 }
