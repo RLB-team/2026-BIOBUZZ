@@ -25,31 +25,31 @@ class Debug(val telemetry: Telemetry)
       val loopHz = 1000.0 / loopTime
 
       // --- Logging ---
-      if (sysVoltage < 10.0) {
+      if (sysVoltage < 10.0 && sysVoltage > 0.0) {
          exceptionTime += loopTime / 1000.0 // Increment by realtime
          motorSpeedCap = 0.5
       }
       if (exceptionTime - warnings > 10.0) {
          RobotLog.w("--- Automated dump due to high exception time ---")
          RobotLog.w("Exception time is $exceptionTime seconds.")
-         RobotLog.w("Drivetrain max power: ${motorSpeedCap * 100}%")
+         RobotLog.w("Drivetrain max power: ${motorSpeedCap * 100.0}%")
          RobotLog.w("Loop time: $loopHz Hz")
 
-         warnings += 10 // Limit how often this warning can go off
+         warnings += 10
       }
 
       // --- Telemetry ---
       if (OUTPUT_TELEMETRY) {
          telemetry.addLine("--- Outtake ---")
          telemetry.addLine("Outtake Front: $outtakeFrontVelocity RPM")
-         telemetry.addLine("Outtake Back: $outtakeBackVelocity RPM\n")
+         telemetry.addLine("Outtake Back: $outtakeBackVelocity RPM")
 
-         telemetry.addLine("--- Intake / Indexer ---")
-         telemetry.addLine("Intake Current: $intakeCurrent amps\n")
+         telemetry.addLine("\n--- Intake / Indexer ---")
+         telemetry.addLine(  "Intake Current: $intakeCurrent amps")
 
-         telemetry.addLine("--- Other Debug Info ---")
-         telemetry.addLine("Battery Voltage: $sysVoltage")
-         telemetry.addLine("Loop Time: $loopHz Hz")
+         telemetry.addLine("\n--- Other Debug Info ---")
+         telemetry.addLine(  "Battery Voltage: $sysVoltage")
+         telemetry.addLine(  "Loop Time: $loopHz Hz")
 
          telemetry.update()
       }

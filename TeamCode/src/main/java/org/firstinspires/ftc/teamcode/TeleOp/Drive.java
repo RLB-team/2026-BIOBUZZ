@@ -10,19 +10,9 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-public final class Drive
+public record Drive(DcMotorEx frontLeft, DcMotorEx frontRight,
+                    DcMotorEx backLeft,  DcMotorEx backRight)
 {
-   private final DcMotorEx frontLeft, frontRight, backLeft, backRight;
-
-   public Drive(final DcMotorEx frontLeft, final DcMotorEx frontRight,
-                final DcMotorEx backLeft, final DcMotorEx backRight)
-   {
-      this.frontLeft = frontLeft;
-      this.frontRight = frontRight;
-      this.backLeft = backLeft;
-      this.backRight = backRight;
-   }
-
    public void run(final double x, final double y, final double rx)
    {
       frontLeft.setPower(rx + x + y);

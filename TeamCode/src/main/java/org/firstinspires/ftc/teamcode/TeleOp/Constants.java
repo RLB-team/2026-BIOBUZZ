@@ -17,8 +17,8 @@ public interface Constants
    double F_A = 0.0;
 
    // --- Drive Bias ---
-   double DRIVE_X_BIAS = 1.3;
-   double DRIVE_Y_BIAS = 1.0;
+   double DRIVE_X_BIAS    = 1.3;
+   double DRIVE_Y_BIAS    = 1.0;
    double DRIVE_TURN_BIAS = 1.0;
 
    // --- Outtake ---
