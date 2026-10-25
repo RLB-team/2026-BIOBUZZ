@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.TeleOp.Debug;
 import org.firstinspires.ftc.teamcode.TeleOp.Drive;
@@ -31,9 +32,8 @@ import java.util.List;
 @TeleOp(name = "Main OpMode")
 public final class Main extends LinearOpMode
 {
-   private double loopTimeMilliseconds;
 
-   double motorSpeedCap;
+    private double motorSpeedCap;
 
    @Override
    public void runOpMode()
@@ -79,9 +79,21 @@ public final class Main extends LinearOpMode
 
       final var timer = new ElapsedTime();
 
+      telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
+      telemetry.setCaptionValueSeparator(" = ");
+
       waitForStart();
 
       while (opModeIsActive()) {
+         for (final var module : modules) module.clearBulkCache();
+
+         double loopTimeMilliseconds = timer.milliseconds();
+         timer.reset();
+         double loopTimeHz =
+                 loopTimeMilliseconds > 0.0
+                         ? 1000.0 / loopTimeMilliseconds
+                         : 0.0;
+
          double aButton = gamepad1.a ? 1.0 : 0.0;
          double bButton = gamepad1.b ? 1.0 : 0.0;
          double xButton = gamepad1.x ? 1.0 : 0.0;
@@ -92,8 +104,8 @@ public final class Main extends LinearOpMode
          double intakeCurrent        = intaker.getCurrent(CurrentUnit.AMPS);
          double sysVoltage           = battery.getVoltage();
 
-         double x = Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
-         double y = Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
+         double x  = Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
+         double y  = Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
          double rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_TURN_BIAS;
 
          // --- Drive ---
@@ -108,25 +120,17 @@ public final class Main extends LinearOpMode
 
          // --- Telemetry and Logs ---
          if (USE_RUNTIME_LOGGER) {
-            motorSpeedCap = Debug.runLogger(sysVoltage, loopTimeMilliseconds);
+            motorSpeedCap = Debug.runLogger(sysVoltage, loopTimeMilliseconds, loopTimeHz);
          }
 
          if (USE_RUNTIME_TELEMETRY) {
             Debug.outputTelemetry(
                     outtakeFrontVelocity,
                     outtakeBackVelocity,
-                    sysVoltage,
-                    loopTimeMilliseconds,
-                    intakeCurrent,
-                    x,
-                    y,
-                    rx
+                    loopTimeHz,
+                    intakeCurrent
             );
          }
-
-         for (final var module : modules) module.clearBulkCache();
-         loopTimeMilliseconds = timer.milliseconds();
-         timer.reset();
       }
    }
 }
