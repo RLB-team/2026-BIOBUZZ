@@ -10,11 +10,19 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-public record Transfer(DcMotorEx intaker, DcMotorEx indexer)
+public final class Transfer
 {
-   public void intake()
+   private final DcMotorEx intaker, indexer;
+
+   public Transfer(final DcMotorEx intaker, final DcMotorEx indexer)
    {
-      intaker.setPower(1);
+      this.intaker = intaker;
+      this.indexer = indexer;
+   }
+
+   public void intake(final double power)
+   {
+      intaker.setPower(power);
    }
 
    public void index(final double index)

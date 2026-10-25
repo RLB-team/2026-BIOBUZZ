@@ -17,14 +17,16 @@ public interface Constants
    double F_A = 0.0;
 
    // --- Drive Bias ---
-   double DRIVE_X_BIAS    = 1.3;
-   double DRIVE_Y_BIAS    = 1.0;
-   double DRIVE_TURN_BIAS = 1.0;
+   double DRIVE_X_BIAS    = 2.3;
+   double DRIVE_Y_BIAS    = 2.0;
+   double DRIVE_TURN_BIAS = 2.0;
+   // Max joystick values are always 0.5? So we multiply by two I guess
 
    // --- Outtake ---
    int SHOOT_SPEED_DIVIDER = 2;
 
 
    // --- Runtime Controls ---
-   boolean OUTPUT_TELEMETRY = true;
+   boolean USE_RUNTIME_TELEMETRY = true;
+   boolean USE_RUNTIME_LOGGER    = true;
 }

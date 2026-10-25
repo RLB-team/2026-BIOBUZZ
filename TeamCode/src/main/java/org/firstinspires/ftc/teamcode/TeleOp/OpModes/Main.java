@@ -6,7 +6,7 @@
  * License: GPL V3.0
  */
 
-package org.firstinspires.ftc.teamcode.TeleOp.MainOpMode;
+package org.firstinspires.ftc.teamcode.TeleOp.OpModes;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.Constants.*;
 
@@ -31,14 +31,7 @@ import java.util.List;
 @TeleOp(name = "Main OpMode")
 public final class Main extends LinearOpMode
 {
-   double loopTime, sysVoltage;
-
-   double x, y, rx;
-
-   double bButton, xButton, leftTrigger;
-
-   double outtakeFrontVelocity, outtakeBackVelocity;
-   double intakeCurrent;
+   private double loopTimeMilliseconds;
 
    double motorSpeedCap;
 
@@ -60,13 +53,14 @@ public final class Main extends LinearOpMode
       final DcMotorEx[] brakeMotors   = { frontLeft, frontRight, backLeft, backRight };
       final DcMotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer,
                                           outtakeFront, outtakeBack };
-      final DcMotorEx[] reverseMotors = { frontLeft, backLeft, outtakeFront };
+      final DcMotorEx[] reverseMotors = { frontLeft, backLeft, intaker, outtakeFront };
 
       for (final var motor : brakeMotors) {
          motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
       }
       for (final var motor : encoderMotors) {
          motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
          motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidf);
       }
       for (final var motor : reverseMotors) {
@@ -87,44 +81,52 @@ public final class Main extends LinearOpMode
 
       waitForStart();
 
-      while (opModeIsActive())
-      {
-         for (var module : modules) module.clearBulkCache();
+      while (opModeIsActive()) {
+         double aButton = gamepad1.a ? 1.0 : 0.0;
+         double bButton = gamepad1.b ? 1.0 : 0.0;
+         double xButton = gamepad1.x ? 1.0 : 0.0;
+         double leftTrigger = -gamepad1.left_trigger / SHOOT_SPEED_DIVIDER;
 
-         updateSensors(outtakeFront, outtakeBack, intaker, battery);
+         double outtakeFrontVelocity = -outtakeFront.getVelocity();
+         double outtakeBackVelocity  = -outtakeBack.getVelocity();
+         double intakeCurrent        = intaker.getCurrent(CurrentUnit.AMPS);
+         double sysVoltage           = battery.getVoltage();
+
+         double x = Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
+         double y = Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
+         double rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_TURN_BIAS;
 
          // --- Drive ---
          Drive.run(x, y, rx);
 
          // --- Intake / Index ---
-         if (gamepad1.a) Transfer.intake();
+         Transfer.intake(aButton);
          Transfer.index(bButton - xButton);
 
          // --- Outtake ---
          Outtake.run(leftTrigger);
 
          // --- Telemetry and Logs ---
-         motorSpeedCap = Debug.run(outtakeFrontVelocity, outtakeBackVelocity, sysVoltage,
-                                   loopTime, intakeCurrent);
+         if (USE_RUNTIME_LOGGER) {
+            motorSpeedCap = Debug.runLogger(sysVoltage, loopTimeMilliseconds);
+         }
 
-         loopTime = timer.milliseconds();
+         if (USE_RUNTIME_TELEMETRY) {
+            Debug.outputTelemetry(
+                    outtakeFrontVelocity,
+                    outtakeBackVelocity,
+                    sysVoltage,
+                    loopTimeMilliseconds,
+                    intakeCurrent,
+                    x,
+                    y,
+                    rx
+            );
+         }
+
+         for (final var module : modules) module.clearBulkCache();
+         loopTimeMilliseconds = timer.milliseconds();
          timer.reset();
       }
-   }
-   private void updateSensors(DcMotorEx outtakeFront, DcMotorEx outtakeBack,
-                              DcMotorEx intaker, VoltageSensor battery)
-   {
-      bButton = gamepad1.b ? 1.0 : 0.0;
-      xButton = gamepad1.x ? 1.0 : 0.0;
-      leftTrigger = -gamepad1.left_trigger / SHOOT_SPEED_DIVIDER;
-
-      outtakeFrontVelocity = -outtakeFront.getVelocity();
-      outtakeBackVelocity  = -outtakeBack.getVelocity();
-      intakeCurrent = intaker.getCurrent(CurrentUnit.AMPS);
-      sysVoltage = battery.getVoltage();
-
-      x  = Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
-      y  = Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
-      rx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_TURN_BIAS;
    }
 }

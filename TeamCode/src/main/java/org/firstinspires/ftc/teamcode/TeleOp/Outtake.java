@@ -10,8 +10,16 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-public record Outtake(DcMotorEx outtakeFront, DcMotorEx outtakeBack)
+public final class Outtake
 {
+   private final DcMotorEx outtakeFront, outtakeBack;
+
+   public Outtake(final DcMotorEx outtakeFront, final DcMotorEx outtakeBack)
+   {
+      this.outtakeFront = outtakeFront;
+      this.outtakeBack  = outtakeBack;
+   }
+
    public void run(final double leftTrigger)
    {
       outtakeFront.setPower(leftTrigger);
