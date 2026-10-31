@@ -8,9 +8,11 @@
 
 package org.firstinspires.ftc.teamcode.TeleOp
 
+import org.firstinspires.ftc.teamcode.TeleOp.Constants.*
+
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import kotlin.math.absoluteValue
+import kotlin.math.roundToLong
 
 class Debug(val telemetry: Telemetry)
 {
@@ -39,18 +41,27 @@ class Debug(val telemetry: Telemetry)
       return motorSpeedCap
    }
 
-   fun outputTelemetry(outtakeFrontVelocity: Double, outtakeBackVelocity: Double,
-                       loopTimeHz: Double, intakeCurrent: Double)
+   fun outputTelemetry(outtakeVelocity: Double,
+                       loopTimeHz: Double, intakeCurrent: Double, sysVoltage: Double)
    {
-      telemetry.addData("Outtake Front (RPM)", outtakeFrontVelocity)
-      telemetry.addData("Outtake Back  (RPM)", outtakeBackVelocity.absoluteValue)
+      if (USE_TELEMETRY_LITE) {
+         telemetry.addData("Outtake (RPM)", outtakeVelocity)
 
-      telemetry.addData("\nIntake Current (AMPS)", intakeCurrent)
+         telemetry.addData("\nIntake Current (AMPS)", intakeCurrent)
 
-      telemetry.addLine("\nOther Debug Info")
-      telemetry.addLine("============================")
-      telemetry.addData("Loop Time (HZ) ", loopTimeHz)
+         telemetry.addLine("\nOther Debug Info" +
+                           "\n============================")
+         telemetry.addData("Loop Time (HZ)", loopTimeHz)
+      } else {
+         telemetry.addLine("Outtake Front = $outtakeVelocity RPM")
 
+         telemetry.addLine("\nIntake Current = $intakeCurrent Amps")
+         telemetry.addLine("Loop Time = $loopTimeHz Hz")
+
+         telemetry.addLine("<h1>Battery: ${(sysVoltage * 10).roundToLong() / 10} V</h1>")
+         // all hell breaks loose, just because we want to round with 1 decimal point
+         // maybe we should make our own math library to avoid this
+      }
       telemetry.update()
    }
 }

@@ -9,9 +9,15 @@ buildscript {
     repositories {
         mavenCentral()
         google()
+        maven { url = 'https://ftclib.org' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.0'
+        // Do NOT upgrade the gradle version. It will break your config.
+        // If you proceed to do this, please increment the following variable:
+
+        // int wasted_hours = 4
+
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }

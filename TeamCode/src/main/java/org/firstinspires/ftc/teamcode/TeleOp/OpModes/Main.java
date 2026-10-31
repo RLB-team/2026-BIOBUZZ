@@ -12,10 +12,7 @@ import static org.firstinspires.ftc.teamcode.TeleOp.Constants.*;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -27,44 +24,39 @@ import org.firstinspires.ftc.teamcode.TeleOp.Drive;
 import org.firstinspires.ftc.teamcode.TeleOp.Outtake;
 import org.firstinspires.ftc.teamcode.TeleOp.Transfer;
 
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import java.util.List;
 
 @TeleOp(name = "Main OpMode")
 public final class Main extends LinearOpMode
 {
 
-    private double motorSpeedCap;
+   private double motorSpeedCap;
 
    @Override
    public void runOpMode()
    {
-      final var pidf = new PIDFCoefficients(P_A, I_A, D_A, F_A);
+      // final var pidf = new PIDFCoefficients(P_A, I_A, D_A, F_A);
 
-      final var battery      = hardwareMap.get(VoltageSensor.class, "Control Hub");
-      final var frontLeft    = hardwareMap.get(DcMotorEx.class, "Front Left");
-      final var frontRight   = hardwareMap.get(DcMotorEx.class, "Front Right");
-      final var backLeft     = hardwareMap.get(DcMotorEx.class, "Back Left");
-      final var backRight    = hardwareMap.get(DcMotorEx.class, "Back Right");
-      final var intaker      = hardwareMap.get(DcMotorEx.class, "Intake");
-      final var indexer      = hardwareMap.get(DcMotorEx.class, "Indexer");
-      final var outtakeFront = hardwareMap.get(DcMotorEx.class, "Outtake Front");
-      final var outtakeBack  = hardwareMap.get(DcMotorEx.class, "Outtake Back");
+      final var battery = hardwareMap.get(VoltageSensor.class, "Control Hub");
 
-      final DcMotorEx[] brakeMotors   = { frontLeft, frontRight, backLeft, backRight };
-      final DcMotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer,
-                                          outtakeFront, outtakeBack };
-      final DcMotorEx[] reverseMotors = { frontLeft, backLeft, intaker, outtakeFront };
+      final MotorEx frontLeft  = new MotorEx(hardwareMap, "frontLeft");
+      final MotorEx frontRight = new MotorEx(hardwareMap, "frontRight");
+      final MotorEx backLeft   = new MotorEx(hardwareMap, "backLeft");
+      final MotorEx backRight  = new MotorEx(hardwareMap, "backRight");
+      final MotorEx intaker    = new MotorEx(hardwareMap, "Intake");
+      final MotorEx indexer    = new MotorEx(hardwareMap, "Indexer");
+      final MotorEx outtake    = new MotorEx(hardwareMap, "Outtake");
 
-      for (final var motor : brakeMotors) {
-         motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-      }
+      final MotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer,
+                                        outtake };
+      final MotorEx[] reversedMotors = { frontLeft, frontRight, backLeft, intaker };
+
       for (final var motor : encoderMotors) {
-         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-         motor.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pidf);
+         motor.setRunMode(MotorEx.RunMode.VelocityControl);
       }
-      for (final var motor : reverseMotors) {
-         motor.setDirection(DcMotorEx.Direction.REVERSE);
+      for (final var motor : reversedMotors) {
+         motor.setInverted(true);
       }
 
       final List<LynxModule> modules = hardwareMap.getAll(LynxModule.class);
@@ -74,12 +66,16 @@ public final class Main extends LinearOpMode
 
       final var Drive    = new Drive(frontLeft, frontRight, backLeft, backRight);
       final var Transfer = new Transfer(intaker, indexer);
-      final var Outtake  = new Outtake(outtakeFront, outtakeBack);
+      final var Outtake  = new Outtake(outtake);
       final var Debug    = new Debug(telemetry);
 
       final var timer = new ElapsedTime();
 
-      telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
+      if (USE_TELEMETRY_LITE) {
+         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
+      } else {
+         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML);
+      }
       telemetry.setCaptionValueSeparator(" = ");
 
       waitForStart();
@@ -89,20 +85,16 @@ public final class Main extends LinearOpMode
 
          double loopTimeMilliseconds = timer.milliseconds();
          timer.reset();
-         double loopTimeHz =
-                 loopTimeMilliseconds > 0.0
-                         ? 1000.0 / loopTimeMilliseconds
-                         : 0.0;
+         double loopTimeHz = (loopTimeMilliseconds > 0.0) ? 1000.0 / loopTimeMilliseconds : 0.0;
 
-         double aButton = gamepad1.a ? 1.0 : 0.0;
-         double bButton = gamepad1.b ? 1.0 : 0.0;
-         double xButton = gamepad1.x ? 1.0 : 0.0;
-         double leftTrigger = -gamepad1.left_trigger / SHOOT_SPEED_DIVIDER;
+         double aButton     = gamepad1.a ? 1.0 : 0.0;
+         double bButton     = gamepad1.b ? 1.0 : 0.0;
+         double xButton     = gamepad1.x ? 1.0 : 0.0;
+         double leftTrigger = gamepad1.left_trigger / SHOOT_SPEED_DIVIDER;
 
-         double outtakeFrontVelocity = -outtakeFront.getVelocity();
-         double outtakeBackVelocity  = -outtakeBack.getVelocity();
-         double intakeCurrent        = intaker.getCurrent(CurrentUnit.AMPS);
-         double sysVoltage           = battery.getVoltage();
+         double outtakeVelocity = -outtake.getVelocity();
+         double intakeCurrent   = intaker.motorEx.getCurrent(CurrentUnit.AMPS);
+         double sysVoltage      = battery.getVoltage();
 
          double x  = Range.clip(-gamepad1.left_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
          double y  = Range.clip(-gamepad1.left_stick_y, -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
@@ -113,7 +105,7 @@ public final class Main extends LinearOpMode
 
          // --- Intake / Index ---
          Transfer.intake(aButton);
-         Transfer.index(bButton - xButton);
+         Transfer.index(aButton - bButton - xButton);
 
          // --- Outtake ---
          Outtake.run(leftTrigger);
@@ -125,10 +117,10 @@ public final class Main extends LinearOpMode
 
          if (USE_RUNTIME_TELEMETRY) {
             Debug.outputTelemetry(
-                    outtakeFrontVelocity,
-                    outtakeBackVelocity,
+                    outtakeVelocity,
                     loopTimeHz,
-                    intakeCurrent
+                    intakeCurrent,
+                    sysVoltage
             );
          }
       }

@@ -29,7 +29,6 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // ADD OR UPDATE THIS BLOCK:
     kotlinOptions {
         jvmTarget = "17"
     }
@@ -38,4 +37,6 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'androidx.core:core-ktx:1.6.0'
+    // Do NOT upgrade androidx.core please
+    implementation 'org.ftclib.ftclib:core:2.1.1'
 }

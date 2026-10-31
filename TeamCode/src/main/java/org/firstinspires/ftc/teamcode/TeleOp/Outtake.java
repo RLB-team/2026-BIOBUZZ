@@ -8,21 +8,19 @@
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 public final class Outtake
 {
-   private final DcMotorEx outtakeFront, outtakeBack;
+   private final MotorEx outtake;
 
-   public Outtake(final DcMotorEx outtakeFront, final DcMotorEx outtakeBack)
+   public Outtake(final MotorEx outtake)
    {
-      this.outtakeFront = outtakeFront;
-      this.outtakeBack  = outtakeBack;
+      this.outtake = outtake;
    }
 
    public void run(final double leftTrigger)
    {
-      outtakeFront.setPower(leftTrigger);
-      outtakeBack.setPower(leftTrigger);
+      outtake.set((leftTrigger != 0.0) ? -0.6 : 0.0);
    }
 }

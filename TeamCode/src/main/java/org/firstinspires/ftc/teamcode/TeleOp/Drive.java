@@ -8,14 +8,14 @@
 
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 public final class Drive
 {
-   private final DcMotorEx frontLeft, frontRight, backLeft, backRight;
+   private final MotorEx frontLeft, frontRight, backLeft, backRight;
 
-   public Drive(final DcMotorEx frontLeft, final DcMotorEx frontRight,
-                final DcMotorEx backLeft,  final DcMotorEx backRight)
+   public Drive(final MotorEx frontLeft, final MotorEx frontRight,
+                final MotorEx backLeft,  final MotorEx backRight)
    {
       this.frontLeft  = frontLeft;
       this.frontRight = frontRight;
@@ -25,9 +25,9 @@ public final class Drive
 
    public void run(final double x, final double y, final double rx)
    {
-      frontLeft.setPower(rx + x + y);
-      backLeft.setPower(rx - x + y);
-      frontRight.setPower(rx - x - y);
-      backRight.setPower(rx + x - y);
+      frontLeft.set(rx + x + y);
+      backLeft.set(rx - x + y);
+      frontRight.set(rx - x - y);
+      backRight.set(rx + x - y);
    }
 }
