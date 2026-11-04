@@ -1,26 +1,33 @@
-/*
- * Outtake.java
- * Year:    2026
- * Authors: Wade Kuhn
- * Game:    BIOBUZZ
- * License: GPL V3.0
- */
-
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.*;
+
+import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 public final class Outtake
 {
    private final MotorEx outtake;
+   private final ServoEx indexerGate;
 
-   public Outtake(final MotorEx outtake)
+   public Outtake(final MotorEx outtake, final ServoEx indexerGate)
    {
       this.outtake = outtake;
+      this.indexerGate = indexerGate;
    }
 
-   public void run(final double leftTrigger)
+   public void run(final boolean leftTrigger, final double outtakeVelocity)
    {
-      outtake.set((leftTrigger != 0.0) ? -0.6 : 0.0);
+      if (leftTrigger) {
+         outtake.motorEx.setVelocity(-SHOOT_SPEED);
+      } else {
+         outtake.motorEx.setVelocity(0);
+      }
+      // offset is necessary for reliability
+      if (outtakeVelocity >= SHOOT_SPEED - 50) {
+         indexerGate.turnToAngle(0);
+      } else {
+         indexerGate.turnToAngle(120);
+      }
    }
 }

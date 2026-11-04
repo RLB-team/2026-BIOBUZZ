@@ -1,18 +1,13 @@
-/*
- * Transfer.java
- * Year:    2026
- * Authors: Wade Kuhn
- * Game:    BIOBUZZ
- * License: GPL V3.0
- */
-
 package org.firstinspires.ftc.teamcode.TeleOp;
+
+import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.TransferConsts.*;
 
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 public final class Transfer
 {
    private final MotorEx intaker, indexer;
+   private IndexerStates transferState = IndexerStates.VOID;
 
    public Transfer(final MotorEx intaker, final MotorEx indexer)
    {
@@ -20,13 +15,20 @@ public final class Transfer
       this.indexer = indexer;
    }
 
-   public void intake(final double power)
+   public void intake()
    {
-      intaker.set(power);
+      intaker.set(INTAKE_SPEED);
+      indexer.set(INDEX_SPEED);
+      transferState = IndexerStates.INTAKING;
    }
 
-   public void index(final double index)
+   public IndexerStates index()
    {
-      indexer.set(index);
+      // Let's take control if we're not intaking
+      if (transferState != IndexerStates.INTAKING) {
+         transferState = IndexerStates.INDEXING;
+         indexer.set(INDEX_SPEED);
+      }
+      return transferState;
    }
 }
