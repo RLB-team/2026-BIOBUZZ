@@ -33,9 +33,7 @@ class Debug(val telemetry: Telemetry)
              intakeCurrent: Double)
    {
       telemetry.addData("Outtake (RPM)", outtakeVelocity)
-
-      telemetry.addData("\nIntake Current (AMPS)", intakeCurrent)
-
+      telemetry.addData("Intake Current (AMPS)", intakeCurrent)
       telemetry.addData("Loop Time (HZ)", loopTimeHz)
       telemetry.update()
    }

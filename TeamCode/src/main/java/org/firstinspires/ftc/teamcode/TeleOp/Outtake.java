@@ -8,12 +8,12 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 public final class Outtake
 {
    private final MotorEx outtake;
-   private final ServoEx gate;
+   private final ServoEx indexerGate;
 
    public Outtake(final MotorEx outtake, final ServoEx indexerGate)
    {
       this.outtake = outtake;
-      this.gate = indexerGate;
+      this.indexerGate = indexerGate;
    }
 
    public void run(final boolean leftTrigger, final double outtakeVelocity)
@@ -25,9 +25,9 @@ public final class Outtake
       }
       // offset is necessary for reliability
       if (outtakeVelocity >= SHOOT_SPEED - 50) {
-         gate.turnToAngle(0);
+         indexerGate.turnToAngle(0);
       } else {
-         gate.turnToAngle(120);
+         indexerGate.turnToAngle(120);
       }
    }
 }

@@ -27,7 +27,6 @@ public final class Transfer
 
    public void index()
    {
-      // Let's take control if we're not intaking
       indexer.set(INDEX_SPEED);
    }
 }
