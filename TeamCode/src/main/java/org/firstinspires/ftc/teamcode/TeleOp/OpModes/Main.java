@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOp.OpModes;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.DriveConsts.*;
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.RuntimeConsts.*;
-import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.TransferConsts.*;
 
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -25,8 +24,7 @@ import java.util.List;
 @TeleOp(name="Main OpMode")
 public final class Main extends LinearOpMode
 {
-   private double motorSpeedCap = 1;
-   private IndexerStates indexerState;
+   private double motorMax = 1;
 
    @Override
    public void runOpMode()
@@ -40,11 +38,10 @@ public final class Main extends LinearOpMode
       final var intaker    = new MotorEx(hardwareMap, "Intake");
       final var indexer    = new MotorEx(hardwareMap, "Indexer");
       final var outtake    = new MotorEx(hardwareMap, "Outtake");
+      final var transferGate = new SimpleServo(hardwareMap, "indexerGate", 0, 120);
 
-      final var indexerGate = new SimpleServo(hardwareMap, "indexerGate", 0, 120);
-
-      final MotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight, indexer,
-                                        outtake };
+      final MotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight,
+                                        indexer, outtake };
       final MotorEx[] reversedMotors = { frontLeft, frontRight, backLeft, intaker };
 
       for (final var motor : encoderMotors) {
@@ -61,7 +58,7 @@ public final class Main extends LinearOpMode
 
       final var Drive    = new MecanumDrive(frontLeft, frontRight, backLeft, backRight);
       final var Transfer = new Transfer(intaker, indexer);
-      final var Outtake  = new Outtake(outtake, indexerGate);
+      final var Outtake  = new Outtake(outtake, transferGate);
       final var Debug    = new Debug(telemetry);
 
       final var timer = new ElapsedTime();
@@ -72,48 +69,44 @@ public final class Main extends LinearOpMode
       waitForStart();
 
       while (opModeIsActive()) {
-         for (final var module : modules) module.clearBulkCache();
+         for (final var module : modules) {
+            module.clearBulkCache();
+         }
 
          double loopTimeMilliseconds = timer.milliseconds();
          timer.reset();
          double loopTimeHz = (loopTimeMilliseconds > 0) ? 1000 / loopTimeMilliseconds : 0;
 
-         boolean aButton    = gamepad1.a;
-         boolean bButton    = gamepad1.b;
-         boolean xButton    = gamepad1.x;
-         boolean yButton    = gamepad1.y;
-         boolean leftBumper = gamepad1.left_bumper;
-
          double outtakeVelocity = outtake.getVelocity();
          double intakeCurrent   = intaker.motorEx.getCurrent(CurrentUnit.AMPS);
          double sysVoltage      = battery.getVoltage();
 
-         double driveX  = Range.clip(gamepad1.left_stick_x,  -motorSpeedCap, motorSpeedCap) * DRIVE_X_BIAS;
-         double driveY  = Range.clip(gamepad1.left_stick_y,  -motorSpeedCap, motorSpeedCap) * DRIVE_Y_BIAS;
-         double driveRx = Range.clip(gamepad1.right_stick_x, -motorSpeedCap, motorSpeedCap) * DRIVE_TURN_BIAS;
+         double driveX  = Range.clip(gamepad1.left_stick_x,  -motorMax, motorMax) * DRIVE_X_BIAS;
+         double driveY  = Range.clip(gamepad1.left_stick_y,  -motorMax, motorMax) * DRIVE_Y_BIAS;
+         double driveRx = Range.clip(gamepad1.right_stick_x, -motorMax, motorMax) * DRIVE_TURN_BIAS;
 
          // --- Drive ---
          Drive.driveRobotCentric(driveX, driveY, driveRx);
 
          // --- Intake / Index ---
-         if (aButton || yButton) {
+         if (gamepad1.a) {
             Transfer.intake();
-         }
-         if (bButton || xButton || yButton) {
-            indexerState = Transfer.index();
+         } else if (gamepad1.y) {
+            Transfer.eject();
+         } else if (gamepad1.b) {
+            Transfer.index();
          }
 
-         // --- TransferConsts ---
-         Outtake.run(leftBumper, outtakeVelocity);
+         // --- Outtake ---
+         Outtake.run(gamepad1.left_bumper, outtakeVelocity);
 
          // --- Telemetry and Logs ---
          if (RUN_TELEMETRY_LOGGER) {
-            motorSpeedCap = Debug.log(sysVoltage, loopTimeMilliseconds, loopTimeHz);
+            motorMax = Debug.log(sysVoltage, loopTimeMilliseconds, loopTimeHz);
          }
 
          if (RUN_TELEMETRY) {
-            Debug.outputTelemetry(outtakeVelocity, loopTimeHz,
-                                  intakeCurrent, indexerState);
+            Debug.print(outtakeVelocity, loopTimeHz, intakeCurrent);
          }
       }
    }
