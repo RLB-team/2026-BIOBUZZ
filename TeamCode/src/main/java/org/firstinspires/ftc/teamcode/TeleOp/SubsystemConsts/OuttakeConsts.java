@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 package org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts;
 
 public interface OuttakeConsts

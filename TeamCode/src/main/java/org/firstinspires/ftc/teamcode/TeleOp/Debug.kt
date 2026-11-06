@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 package org.firstinspires.ftc.teamcode.TeleOp
 
 import com.qualcomm.robotcore.util.RobotLog
@@ -5,9 +7,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 
 class Debug(val telemetry: Telemetry)
 {
-   private var motorMax      = 1.0
-   private var warnings      = 0
-   private var exceptionTime = 0.0
+   private var motorMax: Double = 1.0
+   private var warnings: Int = 0
+   private var exceptionTime: Double = 0.0
 
    fun log(sysVoltage: Double, loopTimeMilliseconds: Double,
            loopTimeHz: Double): Double

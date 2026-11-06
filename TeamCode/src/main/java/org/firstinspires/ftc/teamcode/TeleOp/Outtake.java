@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.*;
@@ -16,15 +18,19 @@ public final class Outtake
       this.indexerGate = indexerGate;
    }
 
-   public void run(final boolean leftTrigger, final double outtakeVelocity)
+   public void run()
    {
-      if (leftTrigger) {
-         outtake.motorEx.setVelocity(-SHOOT_SPEED);
-      } else {
-         outtake.motorEx.setVelocity(0);
-      }
-      // offset is necessary for reliability
-      if (outtakeVelocity >= SHOOT_SPEED - 50) {
+      outtake.motorEx.setVelocity(-SHOOT_SPEED);
+   }
+
+   public void stop()
+   {
+      outtake.motorEx.setVelocity(0);
+   }
+
+   public void manageGate(final double outtakeVelocity)
+   {
+      if (outtakeVelocity >= SHOOT_SPEED - 60) {
          indexerGate.turnToAngle(0);
       } else {
          indexerGate.turnToAngle(120);

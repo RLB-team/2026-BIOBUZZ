@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 package org.firstinspires.ftc.teamcode.TeleOp.OpModes;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.DriveConsts.*;
@@ -95,10 +97,17 @@ public final class Main extends LinearOpMode
             Transfer.eject();
          } else if (gamepad1.b) {
             Transfer.index();
+         } else {
+            Transfer.setIdle();
          }
 
          // --- Outtake ---
-         Outtake.run(gamepad1.left_bumper, outtakeVelocity);
+         if (gamepad1.left_bumper) {
+            Outtake.run();
+         } else {
+            Outtake.stop();
+         }
+         Outtake.manageGate(outtakeVelocity);
 
          // --- Telemetry and Logs ---
          if (RUN_TELEMETRY_LOGGER) {

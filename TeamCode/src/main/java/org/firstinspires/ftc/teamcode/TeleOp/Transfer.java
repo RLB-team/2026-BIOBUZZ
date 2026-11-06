@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.TransferConsts.*;
@@ -20,7 +22,8 @@ public final class Transfer
       indexer.set(INDEX_SPEED);
    }
 
-   public void eject() {
+   public void eject()
+   {
       intaker.set(-INTAKE_SPEED);
       indexer.set(-INDEX_SPEED);
    }
@@ -28,5 +31,11 @@ public final class Transfer
    public void index()
    {
       indexer.set(INDEX_SPEED);
+   }
+
+   public void setIdle()
+   {
+      intaker.set(0);
+      indexer.set(0);
    }
 }
