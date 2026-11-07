@@ -96,7 +96,9 @@ public final class Main extends LinearOpMode
          } else if (gamepad1.y) {
             Transfer.eject();
          } else if (gamepad1.b) {
-            Transfer.index();
+            Transfer.feed();
+         } else if (gamepad1.x) {
+            Transfer.purge();
          } else {
             Transfer.setIdle();
          }

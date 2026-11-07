@@ -28,9 +28,14 @@ public final class Transfer
       indexer.set(-INDEX_SPEED);
    }
 
-   public void index()
+   public void feed()
    {
       indexer.set(INDEX_SPEED);
+   }
+
+   public void purge()
+   {
+      indexer.set(-INDEX_SPEED);
    }
 
    public void setIdle()
