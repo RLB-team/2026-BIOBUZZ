@@ -18,9 +18,14 @@ public final class Outtake
       this.indexerGate = indexerGate;
    }
 
-   public void run()
+   public void run(double speed)
    {
-      outtake.motorEx.setVelocity(-SHOOT_SPEED);
+      outtake.motorEx.setVelocity(-speed);
+   }
+
+   public void reverse(double speed)
+   {
+      outtake.motorEx.setVelocity(speed);
    }
 
    public void stop()
@@ -30,7 +35,7 @@ public final class Outtake
 
    public void manageGate(final double outtakeVelocity)
    {
-      if (outtakeVelocity >= SHOOT_SPEED - 60) {
+      if (outtakeVelocity >= SHOOT_SPEED - 70) {
          indexerGate.turnToAngle(0);
       } else {
          indexerGate.turnToAngle(120);

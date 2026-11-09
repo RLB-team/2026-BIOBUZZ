@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.TeleOp.OpModes;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.DriveConsts.*;
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.RuntimeConsts.*;
+import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.*;
 
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -40,11 +41,12 @@ public final class Main extends LinearOpMode
       final var intaker    = new MotorEx(hardwareMap, "Intake");
       final var indexer    = new MotorEx(hardwareMap, "Indexer");
       final var outtake    = new MotorEx(hardwareMap, "Outtake");
+      outtake.setVeloCoefficients(P_A, P_I, P_D);
       final var transferGate = new SimpleServo(hardwareMap, "indexerGate", 0, 120);
 
       final MotorEx[] encoderMotors = { frontLeft, frontRight, backLeft, backRight,
                                         indexer, outtake };
-      final MotorEx[] reversedMotors = { frontLeft, frontRight, backLeft, intaker };
+      final MotorEx[] reversedMotors = { frontLeft, frontRight, backLeft, intaker, indexer };
 
       for (final var motor : encoderMotors) {
          motor.setRunMode(MotorEx.RunMode.VelocityControl);
@@ -62,8 +64,7 @@ public final class Main extends LinearOpMode
       final var Transfer = new Transfer(intaker, indexer);
       final var Outtake  = new Outtake(outtake, transferGate);
       final var Debug    = new Debug(telemetry);
-
-      final var timer = new ElapsedTime();
+      final var timer    = new ElapsedTime();
 
       telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
       telemetry.setCaptionValueSeparator(" = ");
@@ -79,9 +80,9 @@ public final class Main extends LinearOpMode
          timer.reset();
          double loopTimeHz = (loopTimeMilliseconds > 0) ? 1000 / loopTimeMilliseconds : 0;
 
-         double outtakeVelocity = outtake.getVelocity();
-         double intakeCurrent   = intaker.motorEx.getCurrent(CurrentUnit.AMPS);
-         double sysVoltage      = battery.getVoltage();
+         double outtakeVelocity = -outtake.getVelocity();
+         double intakeCurrent   =  intaker.motorEx.getCurrent(CurrentUnit.AMPS);
+         double sysVoltage      =  battery.getVoltage();
 
          double driveX  = Range.clip(gamepad1.left_stick_x,  -motorMax, motorMax) * DRIVE_X_BIAS;
          double driveY  = Range.clip(gamepad1.left_stick_y,  -motorMax, motorMax) * DRIVE_Y_BIAS;
@@ -100,12 +101,14 @@ public final class Main extends LinearOpMode
          } else if (gamepad1.x) {
             Transfer.purge();
          } else {
-            Transfer.setIdle();
+            Transfer.stop();
          }
 
          // --- Outtake ---
          if (gamepad1.left_bumper) {
-            Outtake.run();
+            Outtake.run(SHOOT_SPEED);
+         } else if (ALLOW_REVERSE_SHOOTER && gamepad1.right_bumper) {
+            Outtake.reverse(SHOOT_SPEED);
          } else {
             Outtake.stop();
          }
@@ -115,7 +118,6 @@ public final class Main extends LinearOpMode
          if (RUN_TELEMETRY_LOGGER) {
             motorMax = Debug.log(sysVoltage, loopTimeMilliseconds, loopTimeHz);
          }
-
          if (RUN_TELEMETRY) {
             Debug.print(outtakeVelocity, loopTimeHz, intakeCurrent);
          }

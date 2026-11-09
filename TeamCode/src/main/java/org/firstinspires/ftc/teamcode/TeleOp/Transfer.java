@@ -38,7 +38,7 @@ public final class Transfer
       indexer.set(-INDEX_SPEED);
    }
 
-   public void setIdle()
+   public void stop()
    {
       intaker.set(0);
       indexer.set(0);
