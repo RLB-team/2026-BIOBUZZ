@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT
-
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.TransferConsts.*;

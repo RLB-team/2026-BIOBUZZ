@@ -47,13 +47,13 @@ public class LeftAuto extends LinearOpMode
       }
 
       final var Transfer = new Transfer(intaker, indexer);
-      final var Outtake  = new Outtake(outtake, transferGate);
+      final var Outtake  = new Outtake(outtake, indexer, intaker, transferGate);
       final var Debug    = new Debug(telemetry);
 
       waitForStart();
 
       if (opModeIsActive()) {
-         Outtake.run(1040);
+         Outtake.run(1060);
          frontLeft.setPower(0.5);
          frontRight.setPower(0.5);
          backLeft.setPower(0.5);
@@ -83,7 +83,6 @@ public class LeftAuto extends LinearOpMode
          sleep(4_000); // Outtake has to stabilize.
 
          Debug.print(-outtake.getVelocity(), 0, 0);
-         Transfer.feed();
 
          sleep(2_400); // Stabilize even more before firing the final ball.
 
@@ -92,7 +91,6 @@ public class LeftAuto extends LinearOpMode
          sleep(5_000);
 
          Outtake.stop();
-         Transfer.stop();
          frontLeft.setPower(-0.5);
          frontRight.setPower(0.5);
          backLeft.setPower(-0.5);
