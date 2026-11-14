@@ -14,7 +14,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.TeleOp.Debug;
 import org.firstinspires.ftc.teamcode.TeleOp.Outtake;
-import org.firstinspires.ftc.teamcode.TeleOp.Transfer;
 
 @Autonomous(name="LeftAuto")
 public class LeftAuto extends LinearOpMode
@@ -46,14 +45,14 @@ public class LeftAuto extends LinearOpMode
          motor.setDirection(DcMotor.Direction.REVERSE);
       }
 
-      final var Transfer = new Transfer(intaker, indexer);
+      // final var Transfer = new Transfer(intaker, indexer); we'll use this later.
       final var Outtake  = new Outtake(outtake, indexer, intaker, transferGate);
       final var Debug    = new Debug(telemetry);
 
       waitForStart();
 
       if (opModeIsActive()) {
-         Outtake.run(1060);
+         Outtake.run(1080);
          frontLeft.setPower(0.5);
          frontRight.setPower(0.5);
          backLeft.setPower(0.5);
@@ -80,13 +79,10 @@ public class LeftAuto extends LinearOpMode
          backLeft.setPower(0);
          backRight.setPower(0);
 
-         sleep(4_000); // Outtake has to stabilize.
+         sleep(7_000); // Outtake has to stabilize.
 
          Debug.print(-outtake.getVelocity(), 0, 0);
-
-         sleep(2_400); // Stabilize even more before firing the final ball.
-
-         Transfer.intake();
+         Outtake.manageGate(-outtake.getVelocity());
 
          sleep(5_000);
 
@@ -97,6 +93,8 @@ public class LeftAuto extends LinearOpMode
          backRight.setPower(0.5);
 
          sleep(435);
+
+         Outtake.manageGate(0);
 
          frontLeft.setPower(0.5);
          frontRight.setPower(0.5);

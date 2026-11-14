@@ -37,7 +37,7 @@ public final class Outtake
       outtake.motorEx.setVelocity(0);
    }
 
-   public void manageGate(final double outtakeVelocity, final transferStates transferState)
+   public void manageGate(final double outtakeVelocity)
                                            //                       ^              ^
    {                                       // there's probably a better name for this, oh well
       if (outtakeVelocity >= SHOOT_SPEED - 100 && outtakeVelocity < SHOOT_SPEED + 60) {

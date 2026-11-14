@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.TeleOp
 
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.SHOOT_SPEED
 
 class Debug(val telemetry: Telemetry)
 {
@@ -34,9 +35,10 @@ class Debug(val telemetry: Telemetry)
    fun print(outtakeVelocity: Double, loopTimeHz: Double,
              intakeCurrent: Double)
    {
-      telemetry.addData("Outtake (RPM)", outtakeVelocity)
+      telemetry.addLine("Outtake = $outtakeVelocity / $SHOOT_SPEED")
       telemetry.addData("Intake Current (AMPS)", intakeCurrent)
       telemetry.addData("Loop Time (HZ)", loopTimeHz)
+      telemetry.addLine()
       telemetry.update()
    }
 }

@@ -121,7 +121,7 @@ public final class Main extends LinearOpMode
             Outtake.stop();
             transferState = transferStates.IDLE;
          }
-         Outtake.manageGate(outtakeVelocity, transferState);
+         Outtake.manageGate(outtakeVelocity);
 
          // --- Telemetry and Logging ---
          if (RUN_TELEMETRY_LOGGER) {
