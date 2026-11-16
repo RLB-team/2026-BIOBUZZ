@@ -3,8 +3,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Autonomous;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.P_A;
-import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.P_D;
-import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.P_I;
+import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.D_A;
+import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.F_A;
+import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.I_A;
 
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
@@ -29,12 +30,11 @@ public class LeftAuto extends LinearOpMode
       final var outtake    = new MotorEx(hardwareMap, "Outtake");
       intaker.setInverted(true);
       intaker.setRunMode(MotorEx.RunMode.VelocityControl);
-      indexer.setInverted(true);
-      outtake.setVeloCoefficients(P_A, P_I, P_D);
+      outtake.motorEx.setVelocityPIDFCoefficients(P_A, I_A, D_A, F_A);
       outtake.setRunMode(MotorEx.RunMode.VelocityControl);
       final var transferGate = new SimpleServo(hardwareMap, "indexerGate", 0, 120);
 
-      final DcMotor[] encoderMotors = { frontLeft, frontRight, backLeft, backRight };
+      final DcMotor[] encoderMotors  = { frontLeft, frontRight, backLeft, backRight };
       final DcMotor[] reversedMotors = { frontLeft, backRight, backLeft };
 
       for (final var motor : encoderMotors) {
@@ -45,14 +45,13 @@ public class LeftAuto extends LinearOpMode
          motor.setDirection(DcMotor.Direction.REVERSE);
       }
 
-      // final var Transfer = new Transfer(intaker, indexer); we'll use this later.
       final var Outtake  = new Outtake(outtake, indexer, intaker, transferGate);
-      final var Debug    = new Debug(telemetry);
+      final var Debug = new Debug(telemetry);
 
       waitForStart();
 
       if (opModeIsActive()) {
-         Outtake.run(1080);
+         Outtake.run(1060);
          frontLeft.setPower(0.5);
          frontRight.setPower(0.5);
          backLeft.setPower(0.5);
@@ -78,23 +77,24 @@ public class LeftAuto extends LinearOpMode
          frontRight.setPower(0);
          backLeft.setPower(0);
          backRight.setPower(0);
+         Debug.print(-outtake.getVelocity(), 0, 0);
 
          sleep(7_000); // Outtake has to stabilize.
 
          Debug.print(-outtake.getVelocity(), 0, 0);
-         Outtake.manageGate(-outtake.getVelocity());
+         Outtake.shootWhenReady(-outtake.getVelocity());
 
-         sleep(5_000);
+         sleep(10_000);
 
+         Debug.print(-outtake.getVelocity(), 0, 0);
+         Outtake.shootWhenReady(0);
          Outtake.stop();
          frontLeft.setPower(-0.5);
          frontRight.setPower(0.5);
          backLeft.setPower(-0.5);
          backRight.setPower(0.5);
 
-         sleep(435);
-
-         Outtake.manageGate(0);
+         sleep(460);
 
          frontLeft.setPower(0.5);
          frontRight.setPower(0.5);

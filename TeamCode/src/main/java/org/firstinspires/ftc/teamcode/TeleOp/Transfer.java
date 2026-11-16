@@ -22,7 +22,7 @@ public final class Transfer
 
    public void eject()
    {
-      intaker.set(-INTAKE_SPEED);
+      intaker.set(-EJECT_SPEED);
       indexer.set(-INDEX_SPEED);
    }
 

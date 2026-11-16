@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConst
 
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -48,8 +49,7 @@ public final class Main extends LinearOpMode
               indexer
       };
       final MotorEx[] reversedMotors = {
-              frontLeft, frontRight, backLeft, intaker,
-              indexer
+              frontLeft, frontRight, backLeft, intaker
       };
 
       for (final var motor : encoderMotors) {
@@ -59,7 +59,8 @@ public final class Main extends LinearOpMode
          motor.setInverted(true);
       }
 
-      outtake.motorEx.setVelocityPIDFCoefficients(P_A, P_I, P_D, 0);
+      outtake.motorEx.setVelocityPIDFCoefficients(P_A, I_A, D_A, F_A);
+      outtake.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
 
       final List<LynxModule> modules = hardwareMap.getAll(LynxModule.class);
@@ -112,16 +113,14 @@ public final class Main extends LinearOpMode
          }
 
          // --- Outtake ---
-         if (gamepad1.left_bumper) {
+         if (gamepad1.left_trigger != 0) {
             Outtake.run(SHOOT_SPEED);
             transferState = transferStates.SHOOTING;
-         } else if (ALLOW_REVERSE_SHOOTER && gamepad1.right_bumper) {
-            Outtake.reverse(SHOOT_SPEED);
          } else {
             Outtake.stop();
             transferState = transferStates.IDLE;
          }
-         Outtake.manageGate(outtakeVelocity);
+         Outtake.shootWhenReady(outtakeVelocity);
 
          // --- Telemetry and Logging ---
          if (RUN_TELEMETRY_LOGGER) {

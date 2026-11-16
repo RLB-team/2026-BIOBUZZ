@@ -10,22 +10,24 @@ class Debug(val telemetry: Telemetry)
 {
    private var motorMax: Double = 1.0
    private var warnings: Int = 0
-   private var exceptionTime: Double = 0.0
+   private var exceptionTime: Float = 0.0F
 
    fun log(sysVoltage: Double, loopTimeMilliseconds: Double,
            loopTimeHz: Double): Double
    {
       if (sysVoltage < 10) {
-         exceptionTime += loopTimeMilliseconds / 1000 // Increment by realtime
+         exceptionTime += (loopTimeMilliseconds / 1000F).toFloat() // Increment by realtime
          motorMax = 0.5
       } else {
          motorMax = 1.0
       }
 
       if (exceptionTime - warnings > 10) {
-         RobotLog.w("\nException time is $exceptionTime seconds.")
-         RobotLog.w("Drivetrain max power: ${motorMax * 100}%")
-         RobotLog.w("Loop time: $loopTimeHz Hz\n")
+         RobotLog.w(  " _________________________________________")
+         RobotLog.w("\n|Exception time is $exceptionTime seconds.|")
+         RobotLog.w(  "|Drivetrain max power: ${motorMax * 100}% |")
+         RobotLog.w(  "|Loop time: $loopTimeHz Hz\n              |")
+         RobotLog.w(  "|_________________________________________/")
          warnings += 10
       }
 
@@ -35,7 +37,7 @@ class Debug(val telemetry: Telemetry)
    fun print(outtakeVelocity: Double, loopTimeHz: Double,
              intakeCurrent: Double)
    {
-      telemetry.addLine("Outtake = $outtakeVelocity / $SHOOT_SPEED")
+      telemetry.addLine("Outtake = $outtakeVelocity / $SHOOT_SPEED RPM")
       telemetry.addData("Intake Current (AMPS)", intakeCurrent)
       telemetry.addData("Loop Time (HZ)", loopTimeHz)
       telemetry.addLine()
