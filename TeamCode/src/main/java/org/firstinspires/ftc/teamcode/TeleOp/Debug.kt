@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: MIT
-
 package org.firstinspires.ftc.teamcode.TeleOp
 
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.SHOOT_SPEED
+import org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts.OuttakeConsts.SHOOT_RPM
 
 class Debug(val telemetry: Telemetry)
 {
@@ -16,7 +14,7 @@ class Debug(val telemetry: Telemetry)
            loopTimeHz: Double): Double
    {
       if (sysVoltage < 10) {
-         exceptionTime += (loopTimeMilliseconds / 1000F).toFloat() // Increment by realtime
+         exceptionTime += (loopTimeMilliseconds / 1000).toFloat() // Increment by realtime
          motorMax = 0.5
       } else {
          motorMax = 1.0
@@ -37,10 +35,10 @@ class Debug(val telemetry: Telemetry)
    fun print(outtakeVelocity: Double, loopTimeHz: Double,
              intakeCurrent: Double)
    {
-      telemetry.addLine("Outtake = $outtakeVelocity / $SHOOT_SPEED RPM")
+      telemetry.addLine("Outtake = $outtakeVelocity / $SHOOT_RPM RPM")
       telemetry.addData("Intake Current (AMPS)", intakeCurrent)
       telemetry.addData("Loop Time (HZ)", loopTimeHz)
-      telemetry.addLine()
+      telemetry.addData("Outtake", outtakeVelocity)
       telemetry.update()
    }
 }

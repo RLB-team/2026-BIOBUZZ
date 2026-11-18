@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts;
 
-public interface OuttakeConsts
-{
-   int SHOOT_SPEED = 1060;
+import com.acmerobotics.dashboard.config.Config;
 
-   double P_A = 5.7;
-   double I_A = 0.18;
-   double D_A = 0;
-   double F_A = 11.5;
+@Config
+public class OuttakeConsts
+{
+   public static int SHOOT_RPM = 1060;
+
+   public static double P_A = 7.1;
+   public static double I_A = 0.2;
+   public static double D_A = 0;
+   public static double F_A = 11.8;
 }

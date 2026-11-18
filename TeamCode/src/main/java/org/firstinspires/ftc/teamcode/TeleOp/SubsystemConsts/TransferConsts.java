@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.TeleOp.SubsystemConsts;
 
-public interface TransferConsts
-{
-   double INTAKE_SPEED = 1;
-   double EJECT_SPEED = 0.5;
-   double INDEX_SPEED = 0.21;
+import com.acmerobotics.dashboard.config.Config;
 
-   enum transferStates {
+@Config
+public class TransferConsts
+{
+   public static double INTAKE_SPEED = 1;
+   public static double EJECT_SPEED = 0.5;
+   public static double INDEX_SPEED = 0.21;
+
+   public enum transferStates {
       IDLE,
       INTAKING,
       INDEXING,
