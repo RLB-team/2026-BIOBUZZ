@@ -33,7 +33,7 @@ public class StraightShootAuto extends RobotConfig
 
          sleep(5_000);
 
-         Outtake.shootWhenReady(-outtake.getVelocity());
+         Outtake.indexIfFlywheelReady(-outtake.getVelocity());
          Debug.print(-outtake.getVelocity(), 0, 0);
 
          sleep(5_000);

@@ -33,7 +33,7 @@ public final class Outtake
    }
 
    /// Opens indexer gate if provided outtake RPM is within threshold
-   public void shootWhenReady(final double outtakeVelocity)
+   public void indexIfFlywheelReady(final double outtakeVelocity)
    {
       if (outtakeVelocity >= SHOOT_RPM - 20 && outtakeVelocity < SHOOT_RPM + 40) {
          // Underspeed is a guaranteed miss, overspeed is a gamble

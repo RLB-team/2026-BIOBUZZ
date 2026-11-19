@@ -17,7 +17,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.List;
 
-public abstract class RobotConfig extends LinearOpMode {
+public abstract class RobotConfig extends LinearOpMode
+{
    protected MecanumDrive Drive;
    protected Transfer Transfer;
    protected Outtake Outtake;
@@ -31,7 +32,8 @@ public abstract class RobotConfig extends LinearOpMode {
    protected List<LynxModule> hubs;
 
    /// Call `initRobot()` in beginning of every TeleOp and auto to initialize `hardwareMap` devices
-   protected void initRobot() {
+   protected void initRobot()
+   {
       if (RUN_DASHBOARD) {
          telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
       }
@@ -71,7 +73,8 @@ public abstract class RobotConfig extends LinearOpMode {
    }
 
    /// Call `clearBulkCache()` at beginning of your TeleOp loop.
-   protected void clearBulkCache() {
+   protected void clearBulkCache()
+   {
       for (LynxModule hub : hubs) {
          hub.clearBulkCache();
       }

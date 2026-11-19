@@ -45,7 +45,7 @@ public class RightAuto extends RobotConfig
          sleep(7_000); // Outtake has to stabilize.
 
          Debug.print(-outtake.getVelocity(), 0, 0);
-         Outtake.shootWhenReady(-outtake.getVelocity());
+         Outtake.indexIfFlywheelReady(-outtake.getVelocity());
 
          sleep(5_000);
 
@@ -57,7 +57,7 @@ public class RightAuto extends RobotConfig
 
          sleep(430);
 
-         Outtake.shootWhenReady(0);
+         Outtake.indexIfFlywheelReady(0);
 
          frontLeft.motorEx.setPower(0.5);
          frontRight.motorEx.setPower(0.5);

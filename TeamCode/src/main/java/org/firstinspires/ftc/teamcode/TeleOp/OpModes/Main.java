@@ -30,7 +30,7 @@ public final class Main extends RobotConfig
       while (opModeIsActive()) {
          clearBulkCache();
 
-         double loopTimeMilliseconds = timer.milliseconds();
+         final double loopTimeMilliseconds = timer.milliseconds();
          timer.reset();
 
          double loopTimeHz;
@@ -72,7 +72,7 @@ public final class Main extends RobotConfig
             Outtake.stop();
             transferState = transferStates.IDLE;
          }
-         Outtake.shootWhenReady(outtakeVelocity);
+         Outtake.indexIfFlywheelReady(outtakeVelocity);
 
          // --- Telemetry and Logging ---
          if (RUN_TELEMETRY_LOGGER) {

@@ -25,7 +25,7 @@ class Debug(val telemetry: Telemetry)
          RobotLog.w("\n|Exception time is $exceptionTime seconds.|")
          RobotLog.w(  "|Drivetrain max power: ${motorMax * 100}% |")
          RobotLog.w(  "|Loop time: $loopTimeHz Hz\n              |")
-         RobotLog.w(  "|_________________________________________/")
+         RobotLog.w(  "|_________________________________________|")
          warnings += 10
       }
 
